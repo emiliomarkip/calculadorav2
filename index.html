@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cotización Markip · Registro de Marca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="shell-header">
+      <div class="shell-brand">
+        <span class="shell-brand-mark">M<sup>®</sup></span>
+        <span>Markip · Cotizador</span>
+      </div>
+      <div class="shell-tabs" id="tabs">
+        <button class="shell-tab active" data-tab="v1">01 · Protagonista</button>
+        <button class="shell-tab" data-tab="v2">02 · Dos Mundos</button>
+        <button class="shell-tab" data-tab="v3">03 · WhatsApp</button>
+      </div>
+    </header>
+
+    <section class="controls" id="controls"></section>
+
+    <div id="v1-stage" class="stage active" data-screen-label="01 Protagonista"></div>
+    <div id="v2-stage" class="stage" data-screen-label="02 Dos Mundos"></div>
+    <div id="v3-stage" class="stage" data-screen-label="03 WhatsApp"></div>
+
+    <footer class="shell-footer">
+      <div>Cotización referencial · UTM abril 2026 · Markip®</div>
+      <div>Ctrl/Cmd + P para imprimir</div>
+    </footer>
+  </div>
+
+  <div class="tweaks" id="tweaks"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="calc.js"></script>
+  <script type="text/babel" src="v1.jsx"></script>
+  <script type="text/babel" src="v2.jsx"></script>
+  <script type="text/babel" src="v3.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
