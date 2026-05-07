@@ -4,6 +4,7 @@
 const V1 = ({ state, showChart }) => {
   const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
+  const MarkipLogo = window.MarkipLogo || null;
 
   const pctHonorarios = (honorariosSubtotal / total) * 100;
   const pctInicio = (tasaInicioTotal / total) * 100;
@@ -71,9 +72,11 @@ const V1 = ({ state, showChart }) => {
           </div>
 
           {/* Logo watermark */}
-          <div className="v1-logo-watermark">
-            {window.MarkipLogo && <window.MarkipLogo white={true} />}
-          </div>
+          {MarkipLogo && (
+            <div className="v1-logo-watermark">
+              <MarkipLogo white={true} />
+            </div>
+          )}
         </section>
 
         {/* Desglose */}
@@ -333,7 +336,7 @@ const v1Styles = `
   opacity: 0.18;
   pointer-events: none;
 }
-.v1-logo-watermark .markip-logo-svg {
+.v1-logo-watermark .markip-logo-img {
   height: 18px;
   width: auto;
 }

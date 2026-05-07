@@ -87,7 +87,7 @@ input, select { font-family: inherit; }
   gap: 8px;
   color: var(--ink-900);
 }
-.shell-logo-svg {
+.shell-logo-img {
   height: 22px;
   width: auto;
   display: block;
@@ -309,11 +309,12 @@ input, select { font-family: inherit; }
 }
 .switch.on::after { transform: translateX(16px); }
 
-/* Markip logo SVG (shared component) */
-.markip-logo-svg {
+/* Markip logo (image component) */
+.markip-logo-img {
   height: 20px;
   width: auto;
-  display: block;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Class selector */

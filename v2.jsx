@@ -5,6 +5,7 @@
 const V2 = ({ state, showChart }) => {
   const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
+  const MarkipLogo = window.MarkipLogo || null;
 
   const pctMarkip = (honorariosSubtotal / total) * 100;
   const pctEstado = ((tasaInicioTotal + tasaFinalTotal) / total) * 100;
@@ -44,9 +45,11 @@ const V2 = ({ state, showChart }) => {
           )}
         </div>
         <div className="v2-header-right">
-          <div className="v2-logo-area">
-            {window.MarkipLogo && <window.MarkipLogo />}
-          </div>
+          {MarkipLogo && (
+            <div className="v2-logo-area">
+              <MarkipLogo />
+            </div>
+          )}
           <div className="v2-primary-cta">
             <div className="v2-cta-label">Primer pago · pagas hoy</div>
             <div className="v2-cta-amount">{formatCLP(primerPago)}</div>
@@ -279,7 +282,7 @@ const v2Styles = `
 .v2-logo-area {
   opacity: 0.5;
 }
-.v2-logo-area .markip-logo-svg {
+.v2-logo-area .markip-logo-img {
   height: 16px;
   width: auto;
 }
