@@ -63,7 +63,7 @@ function applyColorScheme(scheme) {
   }
 }
 
-const TRADEMARK_CLASSES = window.MarkipCalc.TRADEMARK_CLASSES;
+const ALL_CLASSES = window.MarkipCalc.TRADEMARK_CLASSES;
 
 function ClassSelector({ selectedIds, onChange }) {
   const [open, setOpen] = React.useState(false);
@@ -71,11 +71,11 @@ function ClassSelector({ selectedIds, onChange }) {
   const ref = React.useRef(null);
 
   const filtered = search
-    ? TRADEMARK_CLASSES.filter(c =>
+    ? ALL_CLASSES.filter(c =>
         c.id.toString().includes(search) ||
         c.name.toLowerCase().includes(search.toLowerCase())
       )
-    : TRADEMARK_CLASSES;
+    : ALL_CLASSES;
 
   const toggle = (id) => {
     if (selectedIds.includes(id)) {
@@ -98,7 +98,7 @@ function ClassSelector({ selectedIds, onChange }) {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const selectedItems = TRADEMARK_CLASSES.filter(c => selectedIds.includes(c.id));
+  const selectedItems = ALL_CLASSES.filter(c => selectedIds.includes(c.id));
 
   return (
     <div className="class-selector" ref={ref}>
@@ -247,7 +247,7 @@ function App() {
     [pkg, classCount]
   );
 
-  const selectedClassesData = TRADEMARK_CLASSES.filter(c => selectedClasses.includes(c.id));
+  const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
 
   React.useEffect(() => { applyColorScheme(tweaks.colorScheme); }, [tweaks.colorScheme]);
   React.useEffect(() => {
