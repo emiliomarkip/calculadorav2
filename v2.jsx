@@ -282,7 +282,7 @@ const v2Styles = `
 .v2-logo-area {
   opacity: 0.5;
 }
-.v2-logo-area .markip-logo-svg {
+.v2-logo-area .markip-logo-img {
   height: 16px;
   width: auto;
 }

@@ -336,7 +336,7 @@ const v1Styles = `
   opacity: 0.18;
   pointer-events: none;
 }
-.v1-logo-watermark .markip-logo-svg {
+.v1-logo-watermark .markip-logo-img {
   height: 18px;
   width: auto;
 }

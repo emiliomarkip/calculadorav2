@@ -264,7 +264,7 @@ const v3Styles = `
   font-weight: 600;
   font-size: 15px;
 }
-.v3-logo-svg {
+.v3-logo-svg.markip-logo-img {
   height: 16px !important;
   width: auto !important;
 }
