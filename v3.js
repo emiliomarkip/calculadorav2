@@ -9,6 +9,11 @@ const V3 = ({
   const {
     pkg,
     classes,
+    honorariosBase,
+    honorariosBruto,
+    honorariosClasesExtra,
+    honorariosClaseAdicional,
+    descuento,
     honorariosSubtotal,
     tasaInicioTotal,
     tasaFinalTotal,
@@ -165,7 +170,11 @@ const V3 = ({
     className: "v3-bd-section-dot v3-bd-dot-markip"
   }), "Honorarios Markip"), /*#__PURE__*/React.createElement("div", {
     className: "v3-bd-row"
-  }, /*#__PURE__*/React.createElement("span", null, "Base ", pkg.name), /*#__PURE__*/React.createElement("span", null, formatCLP(honorariosSubtotal))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, "Base ", pkg.name), /*#__PURE__*/React.createElement("span", null, formatCLP(honorariosBase))), classes > 1 && /*#__PURE__*/React.createElement("div", {
+    className: "v3-bd-row"
+  }, /*#__PURE__*/React.createElement("span", null, classes - 1, " clase", classes - 1 !== 1 ? 's' : '', " adicional", classes - 1 !== 1 ? 'es' : '', " \xB7 ", formatCLP(honorariosClaseAdicional), " c/u"), /*#__PURE__*/React.createElement("span", null, formatCLP(honorariosClasesExtra))), descuento > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "v3-bd-row v3-bd-row-discount"
+  }, /*#__PURE__*/React.createElement("span", null, "Descuento"), /*#__PURE__*/React.createElement("span", null, "\u2212", formatCLP(descuento))), /*#__PURE__*/React.createElement("div", {
     className: "v3-bd-sub"
   }, "Subtotal \xB7 ", formatCLP(honorariosSubtotal))), /*#__PURE__*/React.createElement("div", {
     className: "v3-bd-section"
@@ -618,6 +627,8 @@ const v3Styles = `
   color: var(--ink-900);
   white-space: nowrap;
 }
+.v3-bd-row-discount > span,
+.v3-bd-row-discount > span:last-child { color: var(--success); }
 .v3-bd-sub {
   text-align: right;
   font-size: 11px;

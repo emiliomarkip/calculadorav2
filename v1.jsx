@@ -2,7 +2,7 @@
 // Formal, editorial, con tipografía display. Sin pie chart — usa barra proporcional minimal.
 
 const V1 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
+  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
 
@@ -87,10 +87,24 @@ const V1 = ({ state, showChart }) => {
             <div className="v1-line v1-line-primary">
               <div>
                 <div className="v1-line-label">Honorarios {pkg.name}</div>
-                <div className="v1-line-sub">Servicio profesional Markip®</div>
+                <div className="v1-line-sub">
+                  {classes > 1
+                    ? `${formatCLP(honorariosBase)} base + ${classes - 1} × ${formatCLP(honorariosClaseAdicional)}`
+                    : 'Servicio profesional Markip®'}
+                </div>
               </div>
-              <div className="v1-line-val">{formatCLP(honorariosSubtotal)}</div>
+              <div className="v1-line-val">{formatCLP(honorariosBruto)}</div>
             </div>
+
+            {descuento > 0 && (
+              <div className="v1-line v1-line-discount">
+                <div>
+                  <div className="v1-line-label">Descuento</div>
+                  <div className="v1-line-sub">Aplicado a honorarios</div>
+                </div>
+                <div className="v1-line-val">−{formatCLP(descuento)}</div>
+              </div>
+            )}
 
             <div className="v1-line">
               <div>
@@ -375,6 +389,8 @@ const v1Styles = `
 }
 .v1-line:last-of-type { border-bottom: 0; }
 .v1-line-primary { padding-top: 0; }
+.v1-line-discount .v1-line-label,
+.v1-line-discount .v1-line-val { color: var(--success); }
 .v1-line-label {
   font-size: 15px;
   font-weight: 500;

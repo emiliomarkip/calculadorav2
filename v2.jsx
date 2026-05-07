@@ -3,7 +3,7 @@
 // Usa donut chart compacto.
 
 const V2 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
+  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
 
@@ -76,7 +76,12 @@ const V2 = ({ state, showChart }) => {
           </div>
 
           <div className="v2-big-amount">{formatCLP(honorariosSubtotal)}</div>
-          <div className="v2-big-sub">Pago único · incluye todo el trámite</div>
+          <div className="v2-big-sub">
+            {classes > 1
+              ? `${formatCLP(honorariosBase)} base + ${classes - 1} × ${formatCLP(honorariosClaseAdicional)}`
+              : 'Pago único · incluye todo el trámite'}
+            {descuento > 0 && <> · <span className="v2-discount-tag">−{formatCLP(descuento)} desc.</span></>}
+          </div>
 
           <div className="v2-world-includes">
             <div className="v2-includes-label">Qué incluye</div>
@@ -399,6 +404,7 @@ const v2Styles = `
   color: var(--ink-500);
   margin-bottom: 24px;
 }
+.v2-discount-tag { color: var(--success); font-weight: 600; }
 
 .v2-includes-label {
   font-size: 11px;

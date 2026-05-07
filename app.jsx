@@ -159,7 +159,11 @@ function ClassSelector({ selectedIds, onChange }) {
   );
 }
 
-function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription }) {
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount }) {
+  const onDiscountChange = (e) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setDiscount(raw === '' ? 0 : parseInt(raw, 10));
+  };
   return (
     <>
       <div className="control">
@@ -183,6 +187,17 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, set
       <div className="control control-classes">
         <label className="control-label">Clase{selectedClasses.length !== 1 ? 's' : ''}</label>
         <ClassSelector selectedIds={selectedClasses} onChange={setSelectedClasses} />
+      </div>
+      <div className="control">
+        <label className="control-label">Descuento (CLP)</label>
+        <input
+          className="control-input control-discount"
+          type="text"
+          inputMode="numeric"
+          value={discount ? discount.toLocaleString('es-CL') : ''}
+          onChange={onDiscountChange}
+          placeholder="0"
+        />
       </div>
       <div className="control">
         <label className="control-label">Descripción</label>
@@ -238,13 +253,14 @@ function App() {
   const [brand, setBrand] = React.useState('Sin nombre');
   const [clientName, setClientName] = React.useState('Carolina Toro');
   const [description, setDescription] = React.useState('');
+  const [discount, setDiscount] = React.useState(0);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
 
   const classCount = Math.max(1, selectedClasses.length);
   const state = React.useMemo(
-    () => window.MarkipCalc.calcFees({ packageId: pkg, classes: classCount }),
-    [pkg, classCount]
+    () => window.MarkipCalc.calcFees({ packageId: pkg, classes: classCount, discount }),
+    [pkg, classCount, discount]
   );
 
   const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
@@ -314,6 +330,7 @@ function App() {
           brand={brand} setBrand={setBrand}
           clientName={clientName} setClientName={setClientName}
           description={description} setDescription={setDescription}
+          discount={discount} setDiscount={setDiscount}
         />,
         controlsEl
       )}
