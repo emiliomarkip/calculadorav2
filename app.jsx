@@ -63,7 +63,7 @@ function applyColorScheme(scheme) {
   }
 }
 
-const { TRADEMARK_CLASSES } = window.MarkipCalc;
+const TRADEMARK_CLASSES = window.MarkipCalc.TRADEMARK_CLASSES;
 
 function ClassSelector({ selectedIds, onChange }) {
   const [open, setOpen] = React.useState(false);
@@ -285,6 +285,7 @@ function App() {
   };
 
   const renderStage = (StageComp, id) => {
+    if (!StageComp) return null;
     const el = document.getElementById(id + '-stage');
     return el ? ReactDOM.createPortal(
       <StageComp

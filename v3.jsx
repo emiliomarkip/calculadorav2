@@ -5,6 +5,7 @@
 const V3 = ({ state, showChart }) => {
   const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
+  const MarkipLogo = window.MarkipLogo || null;
 
   const visibleTags = selectedClassesData.slice(0, 4);
   const hiddenTagCount = selectedClassesData.length - visibleTags.length;
@@ -17,8 +18,8 @@ const V3 = ({ state, showChart }) => {
         <div className="v3-card v3-card-hero">
           <div className="v3-hero-top">
             <div className="v3-brand">
-              {window.MarkipLogo
-                ? <window.MarkipLogo white={true} className="v3-logo-svg" />
+              {MarkipLogo
+                ? <MarkipLogo white={true} className="v3-logo-svg" />
                 : <><span className="v3-logo">M<sup>®</sup></span><span>Markip</span></>
               }
             </div>
