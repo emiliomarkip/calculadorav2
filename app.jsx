@@ -328,6 +328,23 @@ function App() {
   );
 }
 
+// MarkipLogo: disponible globalmente para v1/v2/v3
+function MarkipLogo({ white = false, className = '' }) {
+  const c = white ? 'rgba(255,255,255,0.9)' : 'currentColor';
+  return (
+    <span className={'markip-wordmark ' + className} aria-label="Markip" style={{color: c}}>
+      <svg viewBox="0 0 26 30" className="markip-mark" fill="none" aria-hidden="true">
+        <path d="M3 15 C3 3 23 3 23 15" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+        <circle cx="13" cy="11" r="5" stroke="currentColor" strokeWidth="2.1"/>
+        <line x1="3" y1="15" x2="3" y2="27" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+        <line x1="23" y1="15" x2="23" y2="27" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+      </svg>
+      <span className="markip-wordtext">arkip</span>
+    </span>
+  );
+}
+window.MarkipLogo = MarkipLogo;
+
 const mount = document.createElement('div');
 mount.id = '__app_mount';
 document.body.appendChild(mount);

@@ -87,10 +87,28 @@ input, select { font-family: inherit; }
   gap: 8px;
   color: var(--ink-900);
 }
-.shell-logo-svg {
-  height: 22px;
-  width: auto;
-  display: block;
+.shell-logo-mark {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1px;
+  line-height: 1;
+}
+.shell-logo-icon {
+  width: 20px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-bottom: 1px;
+}
+.shell-logo-text {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  padding-bottom: 1px;
 }
 .shell-brand-sep {
   color: var(--ink-300);
@@ -309,11 +327,30 @@ input, select { font-family: inherit; }
 }
 .switch.on::after { transform: translateX(16px); }
 
-/* Markip logo SVG (shared component) */
-.markip-logo-svg {
-  height: 20px;
-  width: auto;
-  display: block;
+/* Markip logo (wordmark component) */
+.markip-wordmark {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1px;
+  line-height: 1;
+  vertical-align: middle;
+}
+.markip-mark {
+  width: 20px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-bottom: 1px;
+}
+.markip-wordtext {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  padding-bottom: 1px;
 }
 
 /* Class selector */
