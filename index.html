@@ -13,8 +13,16 @@
   <div class="shell">
     <header class="shell-header">
       <div class="shell-brand">
-        <span class="shell-brand-mark">M<sup>®</sup></span>
-        <span>Markip · Cotizador</span>
+        <svg class="shell-logo-svg" viewBox="0 0 76 36" fill="none" aria-label="Markip">
+          <path d="M4 17 C4 3 22 3 22 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="13" cy="13" r="5.5" stroke="currentColor" stroke-width="2.2"/>
+          <line x1="4" y1="17" x2="4" y2="28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="22" y1="17" x2="22" y2="28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="26" y="28" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="18.5" fill="currentColor" letter-spacing="-0.4">arkip</text>
+          <line x1="55" y1="32" x2="72" y2="32" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <span class="shell-brand-sep">·</span>
+        <span class="shell-brand-sub">Cotizador</span>
       </div>
       <div class="shell-tabs" id="tabs">
         <button class="shell-tab active" data-tab="v1">01 · Protagonista</button>
@@ -41,6 +49,7 @@
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <script src="calc.js"></script>
+  <script type="text/babel" src="shared.jsx"></script>
   <script type="text/babel" src="v1.jsx"></script>
   <script type="text/babel" src="v2.jsx"></script>
   <script type="text/babel" src="v3.jsx"></script>
