@@ -3,11 +3,15 @@
 // Usa donut chart compacto.
 
 const V2 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase } = state;
+  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
 
   const pctMarkip = (honorariosSubtotal / total) * 100;
   const pctEstado = ((tasaInicioTotal + tasaFinalTotal) / total) * 100;
+
+  const classLabel = selectedClassesData.length === 1
+    ? `Clase ${selectedClassesData[0].id}`
+    : `${selectedClassesData.length} clases`;
 
   return (
     <div className="v2">
@@ -20,14 +24,34 @@ const V2 = ({ state, showChart }) => {
           <h1 className="v2-title">
             <span className="v2-title-brand">{state.brand || 'Sin nombre'}</span>
             <span className="v2-title-sep">·</span>
-            <span className="v2-title-class">Clase {classes === 1 ? '41' : `${classes} clases`}</span>
+            <span className="v2-title-class">{classLabel}</span>
           </h1>
-          <div className="v2-sub">Paquete <strong>{pkg.name}</strong> · Preparado {new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+          <div className="v2-sub">
+            Preparado {new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' })}
+          </div>
+          {description ? (
+            <div className="v2-description">{description}</div>
+          ) : null}
+          {selectedClassesData.length > 1 && (
+            <div className="v2-class-pills">
+              {selectedClassesData.map(c => (
+                <span key={c.id} className="v2-class-pill">
+                  <span className="v2-class-pill-num">{c.id}</span>
+                  <span className="v2-class-pill-name">{c.name}</span>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="v2-primary-cta">
-          <div className="v2-cta-label">Primer pago · pagas hoy</div>
-          <div className="v2-cta-amount">{formatCLP(primerPago)}</div>
-          <button className="v2-cta-btn">Pagar y comenzar →</button>
+        <div className="v2-header-right">
+          <div className="v2-logo-area">
+            {window.MarkipLogo && <window.MarkipLogo />}
+          </div>
+          <div className="v2-primary-cta">
+            <div className="v2-cta-label">Primer pago · pagas hoy</div>
+            <div className="v2-cta-amount">{formatCLP(primerPago)}</div>
+            <button className="v2-cta-btn">Pagar y comenzar →</button>
+          </div>
         </div>
       </div>
 
@@ -177,7 +201,7 @@ const v2Styles = `
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 24px;
-  align-items: end;
+  align-items: start;
   background: white;
   padding: 28px 32px;
   border-radius: 20px;
@@ -211,8 +235,54 @@ const v2Styles = `
   font-style: italic;
   font-weight: 400;
 }
-.v2-sub { font-size: 14px; color: var(--ink-600); }
-.v2-sub strong { color: var(--ink-900); font-weight: 600; }
+.v2-sub { font-size: 14px; color: var(--ink-500); margin-bottom: 6px; }
+.v2-description {
+  font-size: 13px;
+  color: var(--ink-600);
+  margin-top: 6px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  max-width: 420px;
+}
+.v2-class-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.v2-class-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 6px;
+  background: var(--purple-50);
+  border: 1px solid var(--purple-200);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.v2-class-pill-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--purple-600);
+  font-size: 11px;
+}
+.v2-class-pill-name {
+  color: var(--ink-700);
+}
+
+.v2-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+.v2-logo-area {
+  opacity: 0.5;
+}
+.v2-logo-area .markip-logo-svg {
+  height: 16px;
+  width: auto;
+}
 
 .v2-primary-cta {
   background: linear-gradient(135deg, var(--purple-700) 0%, var(--purple-500) 100%);
@@ -553,6 +623,7 @@ const v2Styles = `
 
 @media (max-width: 960px) {
   .v2-header { grid-template-columns: 1fr; }
+  .v2-header-right { align-items: flex-start; }
   .v2-worlds { grid-template-columns: 1fr; }
   .v2-summary { grid-template-columns: 1fr; }
   .v2-chart { padding-left: 0; border-left: 0; padding-top: 20px; border-top: 1px solid var(--ink-200); justify-content: center; }

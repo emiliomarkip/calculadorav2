@@ -3,8 +3,11 @@
 // Sin chart tradicional — visualiza proporciones con stacked blocks.
 
 const V3 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase } = state;
+  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
+
+  const visibleTags = selectedClassesData.slice(0, 4);
+  const hiddenTagCount = selectedClassesData.length - visibleTags.length;
 
   return (
     <div className="v3-wrap">
@@ -14,8 +17,10 @@ const V3 = ({ state, showChart }) => {
         <div className="v3-card v3-card-hero">
           <div className="v3-hero-top">
             <div className="v3-brand">
-              <span className="v3-logo">M<sup>®</sup></span>
-              <span>Markip</span>
+              {window.MarkipLogo
+                ? <window.MarkipLogo white={true} className="v3-logo-svg" />
+                : <><span className="v3-logo">M<sup>®</sup></span><span>Markip</span></>
+              }
             </div>
             <div className="v3-date">
               {new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'short' })}
@@ -25,11 +30,21 @@ const V3 = ({ state, showChart }) => {
           <div className="v3-hello">
             <span className="v3-hello-wave">Hola 👋</span>
             <h1 className="v3-hello-title">Acá está tu cotización para registrar <em>"{state.brand || 'Sin nombre'}"</em></h1>
+            {description ? (
+              <p className="v3-hello-desc">{description}</p>
+            ) : null}
           </div>
 
           <div className="v3-hero-tags">
-            <span className="v3-tag">{pkg.name}</span>
-            <span className="v3-tag v3-tag-outline">{classes} {classes === 1 ? 'clase' : 'clases'}</span>
+            {visibleTags.map(c => (
+              <span key={c.id} className="v3-tag">
+                <span className="v3-tag-num">{c.id}</span>
+                <span className="v3-tag-name">{c.name}</span>
+              </span>
+            ))}
+            {hiddenTagCount > 0 && (
+              <span className="v3-tag v3-tag-outline">+{hiddenTagCount} más</span>
+            )}
           </div>
 
           <div className="v3-firstpay-card">
@@ -248,6 +263,10 @@ const v3Styles = `
   font-weight: 600;
   font-size: 15px;
 }
+.v3-logo-svg {
+  height: 16px !important;
+  width: auto !important;
+}
 .v3-logo {
   width: 26px; height: 26px;
   background: white;
@@ -283,13 +302,19 @@ const v3Styles = `
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.25;
-  margin: 0;
+  margin: 0 0 8px 0;
 }
 .v3-hello-title em {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
   color: var(--teal-300);
+}
+.v3-hello-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+  line-height: 1.5;
 }
 
 .v3-hero-tags {
@@ -300,16 +325,34 @@ const v3Styles = `
   flex-wrap: wrap;
 }
 .v3-tag {
-  padding: 5px 10px;
-  background: rgba(255, 255, 255, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 100px;
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  max-width: 160px;
+}
+.v3-tag-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--teal-300);
+  flex-shrink: 0;
+}
+.v3-tag-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255,255,255,0.85);
 }
 .v3-tag-outline {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255,255,255,0.7);
 }
 
 .v3-firstpay-card {

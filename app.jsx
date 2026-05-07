@@ -63,9 +63,103 @@ function applyColorScheme(scheme) {
   }
 }
 
-const PKG_IDS = Object.keys(window.MarkipCalc.PACKAGES);
+const { TRADEMARK_CLASSES } = window.MarkipCalc;
 
-function Controls({ classes, setClasses, pkg, setPkg, brand, setBrand, clientName, setClientName }) {
+function ClassSelector({ selectedIds, onChange }) {
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState('');
+  const ref = React.useRef(null);
+
+  const filtered = search
+    ? TRADEMARK_CLASSES.filter(c =>
+        c.id.toString().includes(search) ||
+        c.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : TRADEMARK_CLASSES;
+
+  const toggle = (id) => {
+    if (selectedIds.includes(id)) {
+      if (selectedIds.length === 1) return; // mínimo 1
+      onChange(selectedIds.filter(x => x !== id));
+    } else {
+      onChange([...selectedIds, id].sort((a, b) => a - b));
+    }
+  };
+
+  React.useEffect(() => {
+    if (!open) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+        setSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const selectedItems = TRADEMARK_CLASSES.filter(c => selectedIds.includes(c.id));
+
+  return (
+    <div className="class-selector" ref={ref}>
+      <div
+        className={'class-trigger' + (open ? ' open' : '')}
+        onClick={() => setOpen(!open)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={e => e.key === 'Enter' && setOpen(!open)}
+      >
+        <div className="class-chips">
+          {selectedItems.map(c => (
+            <span key={c.id} className="class-chip">
+              <span className="class-chip-num">{c.id}</span>
+              <button
+                className="class-chip-remove"
+                onClick={e => { e.stopPropagation(); toggle(c.id); }}
+                aria-label={'Quitar clase ' + c.id}
+              >×</button>
+            </span>
+          ))}
+        </div>
+        <span className="class-trigger-arrow">{open ? '▴' : '▾'}</span>
+      </div>
+
+      {open && (
+        <div className="class-dropdown">
+          <input
+            className="class-search"
+            placeholder="Buscar clase..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            autoFocus
+            onClick={e => e.stopPropagation()}
+          />
+          <div className="class-list">
+            {filtered.map(c => {
+              const sel = selectedIds.includes(c.id);
+              return (
+                <div
+                  key={c.id}
+                  className={'class-option' + (sel ? ' selected' : '')}
+                  onClick={() => toggle(c.id)}
+                >
+                  <span className="class-option-num">{c.id}</span>
+                  <span className="class-option-name">{c.name}</span>
+                  {sel && <span className="class-option-check">✓</span>}
+                </div>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div className="class-empty">Sin resultados</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription }) {
   return (
     <>
       <div className="control">
@@ -86,27 +180,19 @@ function Controls({ classes, setClasses, pkg, setPkg, brand, setBrand, clientNam
           placeholder="Nombre de marca"
         />
       </div>
-      <div className="control" style={{display: PKG_IDS.length > 1 ? 'flex' : 'none'}}>
-        <label className="control-label">Paquete</label>
-        <div className="pkg-toggle">
-          {PKG_IDS.map(id => (
-            <button
-              key={id}
-              className={pkg === id ? 'active' : ''}
-              onClick={() => setPkg(id)}
-            >
-              {window.MarkipCalc.PACKAGES[id].name.replace('Markip ', '')}
-            </button>
-          ))}
-        </div>
+      <div className="control control-classes">
+        <label className="control-label">Clase{selectedClasses.length !== 1 ? 's' : ''}</label>
+        <ClassSelector selectedIds={selectedClasses} onChange={setSelectedClasses} />
       </div>
       <div className="control">
-        <label className="control-label">N° de clases</label>
-        <div className="stepper">
-          <button onClick={() => setClasses(Math.max(1, classes - 1))} disabled={classes <= 1}>−</button>
-          <div className="stepper-val">{classes}</div>
-          <button onClick={() => setClasses(Math.min(10, classes + 1))} disabled={classes >= 10}>+</button>
-        </div>
+        <label className="control-label">Descripción</label>
+        <textarea
+          className="control-input control-textarea"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder="Descripción breve (opcional)"
+          rows={2}
+        />
       </div>
     </>
   );
@@ -147,14 +233,21 @@ function App() {
   const [activeTab, setActiveTab] = React.useState(() => {
     try { return localStorage.getItem('markip_tab') || 'v1'; } catch { return 'v1'; }
   });
-  const [classes, setClasses] = React.useState(1);
+  const [selectedClasses, setSelectedClasses] = React.useState([35]);
   const [pkg, setPkg] = React.useState('pro');
   const [brand, setBrand] = React.useState('Sin nombre');
   const [clientName, setClientName] = React.useState('Carolina Toro');
+  const [description, setDescription] = React.useState('');
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
 
-  const state = React.useMemo(() => window.MarkipCalc.calcFees({ packageId: pkg, classes }), [pkg, classes]);
+  const classCount = Math.max(1, selectedClasses.length);
+  const state = React.useMemo(
+    () => window.MarkipCalc.calcFees({ packageId: pkg, classes: classCount }),
+    [pkg, classCount]
+  );
+
+  const selectedClassesData = TRADEMARK_CLASSES.filter(c => selectedClasses.includes(c.id));
 
   React.useEffect(() => { applyColorScheme(tweaks.colorScheme); }, [tweaks.colorScheme]);
   React.useEffect(() => {
@@ -194,7 +287,10 @@ function App() {
   const renderStage = (StageComp, id) => {
     const el = document.getElementById(id + '-stage');
     return el ? ReactDOM.createPortal(
-      <StageComp state={{ ...state, brand, clientName }} showChart={tweaks.showChart} />,
+      <StageComp
+        state={{ ...state, brand, clientName, selectedClassesData, description }}
+        showChart={tweaks.showChart}
+      />,
       el
     ) : null;
   };
@@ -212,10 +308,11 @@ function App() {
     <>
       {controlsEl && ReactDOM.createPortal(
         <Controls
-          classes={classes} setClasses={setClasses}
+          selectedClasses={selectedClasses} setSelectedClasses={setSelectedClasses}
           pkg={pkg} setPkg={setPkg}
           brand={brand} setBrand={setBrand}
           clientName={clientName} setClientName={setClientName}
+          description={description} setDescription={setDescription}
         />,
         controlsEl
       )}

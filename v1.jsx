@@ -2,12 +2,15 @@
 // Formal, editorial, con tipografía display. Sin pie chart — usa barra proporcional minimal.
 
 const V1 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase } = state;
+  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
 
   const pctHonorarios = (honorariosSubtotal / total) * 100;
   const pctInicio = (tasaInicioTotal / total) * 100;
   const pctFinal = (tasaFinalTotal / total) * 100;
+
+  const visibleClasses = selectedClassesData.slice(0, 3);
+  const hiddenCount = selectedClassesData.length - visibleClasses.length;
 
   return (
     <div className="v1">
@@ -20,19 +23,30 @@ const V1 = ({ state, showChart }) => {
             <span className="v1-dot" />
             Cotización de Registro de Marca
           </div>
+
           <div className="v1-hero-meta">
             <div className="v1-meta-row">
               <span>Marca</span>
               <strong>{state.brand || 'Sin nombre'}</strong>
             </div>
-            <div className="v1-meta-row">
-              <span>Clase{classes > 1 ? 's' : ''}</span>
-              <strong>{classes} · Productora de Eventos</strong>
-            </div>
-            <div className="v1-meta-row">
-              <span>Paquete</span>
-              <strong>{pkg.name}</strong>
-            </div>
+            {visibleClasses.map(c => (
+              <div className="v1-meta-row" key={c.id}>
+                <span>Clase {c.id}</span>
+                <strong>{c.name}</strong>
+              </div>
+            ))}
+            {hiddenCount > 0 && (
+              <div className="v1-meta-row v1-meta-more">
+                <span></span>
+                <strong>+{hiddenCount} clase{hiddenCount > 1 ? 's' : ''} más</strong>
+              </div>
+            )}
+            {description ? (
+              <div className="v1-meta-row v1-meta-desc">
+                <span>Descripción</span>
+                <strong className="v1-meta-desc-text">{description}</strong>
+              </div>
+            ) : null}
           </div>
 
           <div className="v1-firstpay">
@@ -54,6 +68,11 @@ const V1 = ({ state, showChart }) => {
             <div className="v1-second-label">Segundo pago · si la marca es aceptada</div>
             <div className="v1-second-amount">{formatCLP(segundoPago)}</div>
             <div className="v1-second-sub">Se cobra solo al ser aprobada por INAPI, aproximadamente 6 meses después del ingreso.</div>
+          </div>
+
+          {/* Logo watermark */}
+          <div className="v1-logo-watermark">
+            {window.MarkipLogo && <window.MarkipLogo white={true} />}
           </div>
         </section>
 
@@ -200,10 +219,26 @@ const v1Styles = `
 }
 .v1-meta-row span {
   color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
 }
 .v1-meta-row strong {
   font-weight: 500;
   color: white;
+  text-align: right;
+}
+.v1-meta-more strong {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 12px;
+}
+.v1-meta-desc-text {
+  font-weight: 400 !important;
+  color: rgba(255,255,255,0.75) !important;
+  font-size: 13px;
+  text-align: right;
+  max-width: 220px;
+  line-height: 1.4;
 }
 .v1-firstpay {
   position: relative;
@@ -289,6 +324,18 @@ const v1Styles = `
   color: rgba(255, 255, 255, 0.6);
   max-width: 380px;
   line-height: 1.5;
+}
+
+.v1-logo-watermark {
+  position: absolute;
+  bottom: 28px;
+  right: 32px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+.v1-logo-watermark .markip-logo-svg {
+  height: 18px;
+  width: auto;
 }
 
 .v1-aside {
