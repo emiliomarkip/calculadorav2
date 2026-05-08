@@ -299,7 +299,7 @@ const v3Styles = `
   font-size: 15px;
 }
 .v3-logo-svg.markip-logo-img {
-  height: 16px !important;
+  height: 38px !important;
   width: auto !important;
 }
 .v3-logo {

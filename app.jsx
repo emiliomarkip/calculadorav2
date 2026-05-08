@@ -347,7 +347,7 @@ function App() {
 
 // MarkipLogo: disponible globalmente para v1/v2/v3
 function MarkipLogo({ white = false, className = '' }) {
-  const src = white ? 'markip-logo-white.png' : 'markip-logo.png';
+  const src = white ? 'markip-icon-lime.png' : 'markip-icon-purple.png';
   return (
     <img
       src={src}

@@ -360,10 +360,10 @@ const v2Styles = `
   gap: 14px;
 }
 .v2-logo-area {
-  opacity: 0.5;
+  opacity: 0.7;
 }
 .v2-logo-area .markip-logo-img {
-  height: 16px;
+  height: 36px;
   width: auto;
 }
 
