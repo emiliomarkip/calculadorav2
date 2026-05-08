@@ -350,7 +350,7 @@ function MarkipLogo({
   white = false,
   className = ''
 }) {
-  const src = white ? 'markip-logo-white.png' : 'markip-logo.png';
+  const src = white ? 'markip-icon-lime.png' : 'markip-icon-purple.png';
   return /*#__PURE__*/React.createElement("img", {
     src: src,
     alt: "Markip",

@@ -88,7 +88,7 @@ input, select { font-family: inherit; }
   color: var(--ink-900);
 }
 .shell-logo-img {
-  height: 22px;
+  height: 28px;
   width: auto;
   display: block;
 }
@@ -311,7 +311,7 @@ input, select { font-family: inherit; }
 
 /* Markip logo (image component) */
 .markip-logo-img {
-  height: 20px;
+  height: 32px;
   width: auto;
   display: inline-block;
   vertical-align: middle;

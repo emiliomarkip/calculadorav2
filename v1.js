@@ -358,13 +358,13 @@ const v1Styles = `
 
 .v1-logo-watermark {
   position: absolute;
-  bottom: 28px;
-  right: 32px;
-  opacity: 0.18;
+  bottom: 24px;
+  right: 28px;
+  opacity: 0.22;
   pointer-events: none;
 }
 .v1-logo-watermark .markip-logo-img {
-  height: 18px;
+  height: 40px;
   width: auto;
 }
 
