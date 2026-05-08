@@ -152,8 +152,14 @@ function Controls({
   clientName,
   setClientName,
   description,
-  setDescription
+  setDescription,
+  discount,
+  setDiscount
 }) {
+  const onDiscountChange = e => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setDiscount(raw === '' ? 0 : parseInt(raw, 10));
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "control"
   }, /*#__PURE__*/React.createElement("label", {
@@ -179,6 +185,17 @@ function Controls({
   }, "Clase", selectedClasses.length !== 1 ? 's' : ''), /*#__PURE__*/React.createElement(ClassSelector, {
     selectedIds: selectedClasses,
     onChange: setSelectedClasses
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "control"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "control-label"
+  }, "Descuento (CLP)"), /*#__PURE__*/React.createElement("input", {
+    className: "control-input control-discount",
+    type: "text",
+    inputMode: "numeric",
+    value: discount ? discount.toLocaleString('es-CL') : '',
+    onChange: onDiscountChange,
+    placeholder: "0"
   })), /*#__PURE__*/React.createElement("div", {
     className: "control"
   }, /*#__PURE__*/React.createElement("label", {
@@ -231,13 +248,15 @@ function App() {
   const [brand, setBrand] = React.useState('Sin nombre');
   const [clientName, setClientName] = React.useState('Carolina Toro');
   const [description, setDescription] = React.useState('');
+  const [discount, setDiscount] = React.useState(0);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
   const classCount = Math.max(1, selectedClasses.length);
   const state = React.useMemo(() => window.MarkipCalc.calcFees({
     packageId: pkg,
-    classes: classCount
-  }), [pkg, classCount]);
+    classes: classCount,
+    discount
+  }), [pkg, classCount, discount]);
   const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
   React.useEffect(() => {
     applyColorScheme(tweaks.colorScheme);
@@ -317,7 +336,9 @@ function App() {
     clientName: clientName,
     setClientName: setClientName,
     description: description,
-    setDescription: setDescription
+    setDescription: setDescription,
+    discount: discount,
+    setDiscount: setDiscount
   }), controlsEl), tweaksEl && ReactDOM.createPortal(/*#__PURE__*/React.createElement(Tweaks, {
     tweaks: tweaks,
     setTweak: setTweak

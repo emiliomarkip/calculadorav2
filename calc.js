@@ -25,10 +25,16 @@ const PACKAGES = {
 // Tasas INAPI (Chile)
 // Inicio: 1 UTM + $10.000 por clase
 // Final (si es aceptada): 2 UTM por clase
-function calcFees({ packageId, classes }) {
+// Honorarios: base por la primera clase + $60.000 por cada clase adicional
+const HONORARIOS_CLASE_ADICIONAL = 60000;
+
+function calcFees({ packageId, classes, discount = 0 }) {
   const pkg = PACKAGES[packageId];
   const honorariosBase = pkg.base;
-  const honorariosSubtotal = honorariosBase;
+  const honorariosClasesExtra = Math.max(0, classes - 1) * HONORARIOS_CLASE_ADICIONAL;
+  const honorariosBruto = honorariosBase + honorariosClasesExtra;
+  const descuento = Math.max(0, Math.min(discount || 0, honorariosBruto));
+  const honorariosSubtotal = honorariosBruto - descuento;
 
   const tasaInicioPorClase = Math.round(UTM_CLP + 10000);
   const tasaFinalPorClase = Math.round(2 * UTM_CLP);
@@ -45,6 +51,10 @@ function calcFees({ packageId, classes }) {
     pkg,
     classes,
     honorariosBase,
+    honorariosClasesExtra,
+    honorariosClaseAdicional: HONORARIOS_CLASE_ADICIONAL,
+    honorariosBruto,
+    descuento,
     honorariosSubtotal,
     tasaInicioPorClase,
     tasaFinalPorClase,

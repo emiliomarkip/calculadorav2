@@ -459,6 +459,11 @@ input, select { font-family: inherit; }
   color: var(--ink-500);
 }
 
+.control-discount {
+  min-width: 140px;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Description textarea */
 .control-textarea {
   resize: vertical;

@@ -8,6 +8,11 @@ const V1 = ({
   const {
     pkg,
     classes,
+    honorariosBase,
+    honorariosBruto,
+    honorariosClasesExtra,
+    honorariosClaseAdicional,
+    descuento,
     honorariosSubtotal,
     tasaInicioTotal,
     tasaFinalTotal,
@@ -94,9 +99,17 @@ const V1 = ({
     className: "v1-line-label"
   }, "Honorarios ", pkg.name), /*#__PURE__*/React.createElement("div", {
     className: "v1-line-sub"
-  }, "Servicio profesional Markip\xAE")), /*#__PURE__*/React.createElement("div", {
+  }, classes > 1 ? `${formatCLP(honorariosBase)} base + ${classes - 1} × ${formatCLP(honorariosClaseAdicional)}` : 'Servicio profesional Markip®')), /*#__PURE__*/React.createElement("div", {
     className: "v1-line-val"
-  }, formatCLP(honorariosSubtotal))), /*#__PURE__*/React.createElement("div", {
+  }, formatCLP(honorariosBruto))), descuento > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "v1-line v1-line-discount"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "v1-line-label"
+  }, "Descuento"), /*#__PURE__*/React.createElement("div", {
+    className: "v1-line-sub"
+  }, "Aplicado a honorarios")), /*#__PURE__*/React.createElement("div", {
+    className: "v1-line-val"
+  }, "\u2212", formatCLP(descuento))), /*#__PURE__*/React.createElement("div", {
     className: "v1-line"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "v1-line-label"
@@ -389,6 +402,8 @@ const v1Styles = `
 }
 .v1-line:last-of-type { border-bottom: 0; }
 .v1-line-primary { padding-top: 0; }
+.v1-line-discount .v1-line-label,
+.v1-line-discount .v1-line-val { color: var(--success); }
 .v1-line-label {
   font-size: 15px;
   font-weight: 500;

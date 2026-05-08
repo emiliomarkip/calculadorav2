@@ -9,6 +9,11 @@ const V2 = ({
   const {
     pkg,
     classes,
+    honorariosBase,
+    honorariosBruto,
+    honorariosClasesExtra,
+    honorariosClaseAdicional,
+    descuento,
     honorariosSubtotal,
     tasaInicioTotal,
     tasaFinalTotal,
@@ -101,7 +106,9 @@ const V2 = ({
     className: "v2-big-amount"
   }, formatCLP(honorariosSubtotal)), /*#__PURE__*/React.createElement("div", {
     className: "v2-big-sub"
-  }, "Pago \xFAnico \xB7 incluye todo el tr\xE1mite"), /*#__PURE__*/React.createElement("div", {
+  }, classes > 1 ? `${formatCLP(honorariosBase)} base + ${classes - 1} × ${formatCLP(honorariosClaseAdicional)}` : 'Pago único · incluye todo el trámite', descuento > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, " \xB7 ", /*#__PURE__*/React.createElement("span", {
+    className: "v2-discount-tag"
+  }, "\u2212", formatCLP(descuento), " desc."))), /*#__PURE__*/React.createElement("div", {
     className: "v2-world-includes"
   }, /*#__PURE__*/React.createElement("div", {
     className: "v2-includes-label"
@@ -472,6 +479,7 @@ const v2Styles = `
   color: var(--ink-500);
   margin-bottom: 24px;
 }
+.v2-discount-tag { color: var(--success); font-weight: 600; }
 
 .v2-includes-label {
   font-size: 11px;

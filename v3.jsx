@@ -3,7 +3,7 @@
 // Sin chart tradicional — visualiza proporciones con stacked blocks.
 
 const V3 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
+  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
 
@@ -141,8 +141,20 @@ const V3 = ({ state, showChart }) => {
               </div>
               <div className="v3-bd-row">
                 <span>Base {pkg.name}</span>
-                <span>{formatCLP(honorariosSubtotal)}</span>
+                <span>{formatCLP(honorariosBase)}</span>
               </div>
+              {classes > 1 && (
+                <div className="v3-bd-row">
+                  <span>{classes - 1} clase{classes - 1 !== 1 ? 's' : ''} adicional{classes - 1 !== 1 ? 'es' : ''} · {formatCLP(honorariosClaseAdicional)} c/u</span>
+                  <span>{formatCLP(honorariosClasesExtra)}</span>
+                </div>
+              )}
+              {descuento > 0 && (
+                <div className="v3-bd-row v3-bd-row-discount">
+                  <span>Descuento</span>
+                  <span>−{formatCLP(descuento)}</span>
+                </div>
+              )}
               <div className="v3-bd-sub">Subtotal · {formatCLP(honorariosSubtotal)}</div>
             </div>
 
@@ -593,6 +605,8 @@ const v3Styles = `
   color: var(--ink-900);
   white-space: nowrap;
 }
+.v3-bd-row-discount > span,
+.v3-bd-row-discount > span:last-child { color: var(--success); }
 .v3-bd-sub {
   text-align: right;
   font-size: 11px;
