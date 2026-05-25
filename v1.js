@@ -29,7 +29,7 @@ const V1 = ({
     formatCLP
   } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
-  const brandImg = window.MARKIP_BRAND_IMG;
+  const brandImg = 'markip-logo-white.png';
   const pctHonorarios = honorariosSubtotal / total * 100;
   const pctInicio = tasaInicioTotal / total * 100;
   const pctFinal = tasaFinalTotal / total * 100;
@@ -219,16 +219,10 @@ const v1Styles = `
 }
 .v1-brandbar {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  background: #fff;
-  padding: 9px 16px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  margin-bottom: 26px;
 }
 .v1-brand-img {
-  height: 34px;
+  height: 46px;
   width: auto;
   display: block;
 }

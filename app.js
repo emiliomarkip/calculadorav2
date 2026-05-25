@@ -345,10 +345,6 @@ function App() {
   }), tweaksEl), renderStage(window.V1, 'v1'), renderStage(window.V2, 'v2'), renderStage(window.V3, 'v3'));
 }
 
-// Imagen de marca Markip (logo prominente) — disponible globalmente
-const MARKIP_BRAND_IMG = "https://lh3.googleusercontent.com/Vlq8om2qtkJQn-AvIDYb1LgfUSlRvuHgjFsm8LJeA64CqXXthD0dRFTqRW6gE1FvyKC417DSkqKaKLoaIzuINv9aMVb84gPB620=s0";
-window.MARKIP_BRAND_IMG = MARKIP_BRAND_IMG;
-
 // MarkipLogo: disponible globalmente para v1/v2/v3
 function MarkipLogo({
   white = false,

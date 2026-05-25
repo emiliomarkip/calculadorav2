@@ -5,7 +5,7 @@
 const V3 = ({ state, showChart }) => {
   const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
-  const brandImg = window.MARKIP_BRAND_IMG;
+  const brandImg = 'markip-logo-white.png';
 
   const visibleTags = selectedClassesData.slice(0, 4);
   const hiddenTagCount = selectedClassesData.length - visibleTags.length;
@@ -270,13 +270,9 @@ const v3Styles = `
 .v3-brand {
   display: inline-flex;
   align-items: center;
-  background: #fff;
-  padding: 7px 13px;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 .v3-brand-img {
-  height: 28px;
+  height: 34px;
   width: auto;
   display: block;
 }

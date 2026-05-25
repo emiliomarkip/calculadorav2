@@ -5,7 +5,7 @@
 const V2 = ({ state, showChart }) => {
   const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
-  const brandImg = window.MARKIP_BRAND_IMG;
+  const brandImg = 'markip-logo.png';
 
   const pctMarkip = (honorariosSubtotal / total) * 100;
   const pctEstado = ((tasaInicioTotal + tasaFinalTotal) / total) * 100;
