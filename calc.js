@@ -28,12 +28,13 @@ const PACKAGES = {
 // Honorarios: base por la primera clase + $60.000 por cada clase adicional
 const HONORARIOS_CLASE_ADICIONAL = 60000;
 
-function calcFees({ packageId, classes, discount = 0 }) {
+function calcFees({ packageId, classes, discountPct = 0 }) {
   const pkg = PACKAGES[packageId];
   const honorariosBase = pkg.base;
   const honorariosClasesExtra = Math.max(0, classes - 1) * HONORARIOS_CLASE_ADICIONAL;
   const honorariosBruto = honorariosBase + honorariosClasesExtra;
-  const descuento = Math.max(0, Math.min(discount || 0, honorariosBruto));
+  const descuentoPct = Math.max(0, Math.min(discountPct || 0, 100));
+  const descuento = Math.round(honorariosBruto * (descuentoPct / 100));
   const honorariosSubtotal = honorariosBruto - descuento;
 
   const tasaInicioPorClase = Math.round(UTM_CLP + 10000);
@@ -55,6 +56,7 @@ function calcFees({ packageId, classes, discount = 0 }) {
     honorariosClaseAdicional: HONORARIOS_CLASE_ADICIONAL,
     honorariosBruto,
     descuento,
+    descuentoPct,
     honorariosSubtotal,
     tasaInicioPorClase,
     tasaFinalPorClase,

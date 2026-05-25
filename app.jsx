@@ -162,7 +162,9 @@ function ClassSelector({ selectedIds, onChange }) {
 function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount }) {
   const onDiscountChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
-    setDiscount(raw === '' ? 0 : parseInt(raw, 10));
+    let n = raw === '' ? 0 : parseInt(raw, 10);
+    if (n > 100) n = 100;
+    setDiscount(n);
   };
   return (
     <>
@@ -189,14 +191,14 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, set
         <ClassSelector selectedIds={selectedClasses} onChange={setSelectedClasses} />
       </div>
       <div className="control">
-        <label className="control-label">Descuento (CLP)</label>
+        <label className="control-label">Descuento (%)</label>
         <input
           className="control-input control-discount"
           type="text"
           inputMode="numeric"
-          value={discount ? discount.toLocaleString('es-CL') : ''}
+          value={discount ? discount + '%' : ''}
           onChange={onDiscountChange}
-          placeholder="0"
+          placeholder="0%"
         />
       </div>
       <div className="control">
@@ -256,7 +258,7 @@ function App() {
 
   const classCount = Math.max(1, selectedClasses.length);
   const state = React.useMemo(
-    () => window.MarkipCalc.calcFees({ packageId: pkg, classes: classCount, discount }),
+    () => window.MarkipCalc.calcFees({ packageId: pkg, classes: classCount, discountPct: discount }),
     [pkg, classCount, discount]
   );
 

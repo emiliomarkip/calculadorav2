@@ -2,7 +2,7 @@
 // Formal, editorial, con tipografía display. Sin pie chart — usa barra proporcional minimal.
 
 const V1 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
+  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, descuentoPct, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
   const brandImg = 'markip-wordmark-white.png';
@@ -12,6 +12,36 @@ const V1 = ({ state, showChart }) => {
   const pctFinal = (tasaFinalTotal / total) * 100;
 
   const classNumbers = selectedClassesData.map(c => c.id).join(', ');
+
+  const timeline = [
+    {
+      label: 'Presentación',
+      tag: '5-15 días hábiles',
+      services: ['Análisis de Viabilidad', 'Ingreso de solicitud', 'Contestación de observaciones de forma'],
+    },
+    {
+      label: 'Publicación y oposiciones',
+      tag: '30 días hábiles',
+      services: ['Publicación en Diario Oficial', 'Defensa de oposición de terceros'],
+      highlights: ['Defensa de oposición de terceros'],
+    },
+    {
+      label: 'Examen de fondo',
+      tag: '90-120 días hábiles',
+      services: ['Defensa de observación de fondo'],
+      highlights: ['Defensa de observación de fondo'],
+    },
+    {
+      label: 'Aprobación y pago de tasas',
+      tag: '15 días hábiles',
+      services: ['Gestión de pago final de tasas'],
+    },
+    {
+      label: 'Marca registrada',
+      tag: 'Vigencia 10 años',
+      services: ['Envío de certificado de registro'],
+    },
+  ];
 
   return (
     <div className="v1">
@@ -107,8 +137,8 @@ const V1 = ({ state, showChart }) => {
             {descuento > 0 && (
               <div className="v1-line v1-line-discount">
                 <div>
-                  <div className="v1-line-label">Descuento</div>
-                  <div className="v1-line-sub">Aplicado a honorarios</div>
+                  <div className="v1-line-label">Descuento ({descuentoPct}%)</div>
+                  <div className="v1-line-sub">{descuentoPct}% sobre honorarios · −{formatCLP(descuento)}</div>
                 </div>
                 <div className="v1-line-val">−{formatCLP(descuento)}</div>
               </div>
@@ -156,21 +186,41 @@ const V1 = ({ state, showChart }) => {
           )}
         </aside>
 
-        {/* Servicios */}
+        {/* Servicios — timeline del proceso */}
         <section className="v1-services">
           <div className="v1-services-head">
-            <div>
-              <div className="v1-services-kicker">Honorarios Markip incluyen</div>
-              <h3 className="v1-services-title">8 servicios que hacen tu registro impecable</h3>
-            </div>
+            <h3 className="v1-services-title">Honorarios Markip incluyen</h3>
+            <p className="v1-services-lead">Acompañamiento en cada etapa del proceso ante INAPI.</p>
           </div>
-          <div className="v1-services-grid">
-            {pkg.includes.map((s, i) => (
-              <div className="v1-service" key={i}>
-                <span className="v1-service-num">{String(i + 1).padStart(2, '0')}</span>
-                <span className="v1-service-name">{s}</span>
-              </div>
-            ))}
+
+          <div className="v1-timeline">
+            {timeline.map((st, i) => {
+              const isHot = !!st.highlights;
+              return (
+                <div className={'v1-tl-stage' + (isHot ? ' v1-tl-stage-hot' : '')} key={i}>
+                  <div className="v1-tl-track">
+                    <span className="v1-tl-line" />
+                    <span className="v1-tl-node">{i + 1}</span>
+                  </div>
+                  <div className="v1-tl-tag">{st.tag}</div>
+                  <div className="v1-tl-label">{st.label}</div>
+                  <ul className="v1-tl-services">
+                    {st.services.map((s, j) => {
+                      const hot = st.highlights && st.highlights.includes(s);
+                      return (
+                        <li key={j} className={'v1-tl-service' + (hot ? ' v1-tl-service-hot' : '')}>
+                          <span className="v1-tl-mark">{hot ? '★' : '✓'}</span>
+                          <span className="v1-tl-text">
+                            {s}
+                            {hot && <span className="v1-tl-badge">Diferenciador Markip</span>}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>
@@ -487,14 +537,6 @@ const v1Styles = `
   padding-bottom: 24px;
   border-bottom: 1px solid var(--ink-200);
 }
-.v1-services-kicker {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--purple-600);
-  font-weight: 600;
-  margin-bottom: 6px;
-}
 .v1-services-title {
   font-family: var(--font-display);
   font-size: 32px;
@@ -503,40 +545,129 @@ const v1Styles = `
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
-.v1-services-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+.v1-services-lead {
+  font-size: 14px;
+  color: var(--ink-500);
+  margin: 8px 0 0;
 }
-.v1-service {
+
+.v1-timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+}
+.v1-tl-stage {
+  display: flex;
+  flex-direction: column;
+}
+.v1-tl-track {
+  position: relative;
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: var(--ink-50);
-  border-radius: 10px;
-  font-size: 13px;
+  margin-bottom: 14px;
 }
-.v1-service-num {
-  font-family: var(--font-mono);
+.v1-tl-line {
+  position: absolute;
+  left: 22px;
+  right: -18px;
+  top: 50%;
+  height: 2px;
+  background: var(--ink-200);
+}
+.v1-tl-stage:last-child .v1-tl-line { display: none; }
+.v1-tl-node {
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--purple-600);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 0 0 4px white, 0 0 0 5px var(--ink-200);
+}
+.v1-tl-stage-hot .v1-tl-node {
+  background: linear-gradient(135deg, var(--purple-600), var(--teal-400));
+  box-shadow: 0 0 0 4px white, 0 0 0 6px var(--teal-300);
+}
+.v1-tl-tag {
+  align-self: flex-start;
   font-size: 11px;
+  font-weight: 600;
+  color: var(--purple-700);
+  background: var(--purple-50);
+  border: 1px solid var(--purple-200);
+  padding: 3px 9px;
+  border-radius: 100px;
+  margin-bottom: 8px;
+}
+.v1-tl-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-900);
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+.v1-tl-services {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.v1-tl-service {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ink-700);
+  line-height: 1.35;
+}
+.v1-tl-mark {
   color: var(--purple-500);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.v1-tl-text { display: flex; flex-direction: column; }
+.v1-tl-service-hot {
+  background: linear-gradient(180deg, var(--purple-50), white);
+  border: 1px solid var(--teal-300);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--ink-900);
   font-weight: 600;
 }
-.v1-service-name {
-  color: var(--ink-800);
-  font-weight: 500;
+.v1-tl-service-hot .v1-tl-mark { color: #f59e0b; }
+.v1-tl-badge {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--purple-900);
+  background: var(--teal-300);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 @media (max-width: 960px) {
   .v1-grid { grid-template-columns: 1fr; }
-  .v1-services-grid { grid-template-columns: repeat(2, 1fr); }
+  .v1-timeline { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .v1-tl-line { display: none; }
+  .v1-tl-stage { background: var(--ink-50); border-radius: 12px; padding: 16px; }
+  .v1-tl-track { height: auto; margin-bottom: 12px; }
   .v1-hero { padding: 28px; min-height: auto; }
   .v1-amount-num { font-size: 72px; }
   .v1-currency { font-size: 28px; margin-top: 8px; }
 }
 @media (max-width: 480px) {
-  .v1-services-grid { grid-template-columns: 1fr; }
+  .v1-timeline { grid-template-columns: 1fr; }
   .v1-hero { padding: 24px; }
   .v1-amount-num { font-size: 56px; }
   .v1-services { padding: 20px; }
