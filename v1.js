@@ -230,9 +230,7 @@ const V1 = ({
         className: "v1-tl-mark"
       }, hot ? '★' : '✓'), /*#__PURE__*/React.createElement("span", {
         className: "v1-tl-text"
-      }, s, hot && /*#__PURE__*/React.createElement("span", {
-        className: "v1-tl-badge"
-      }, "Diferenciador Markip")));
+      }, s));
     })));
   })))));
 };
@@ -651,18 +649,6 @@ const v1Styles = `
   font-weight: 600;
 }
 .v1-tl-service-hot .v1-tl-mark { color: #f59e0b; }
-.v1-tl-badge {
-  align-self: flex-start;
-  margin-top: 4px;
-  font-size: 9px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--purple-900);
-  background: var(--teal-300);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
 
 @media (max-width: 960px) {
   .v1-grid { grid-template-columns: 1fr; }
