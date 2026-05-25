@@ -245,9 +245,6 @@ function Tweaks({ tweaks, setTweak }) {
 }
 
 function App() {
-  const [activeTab, setActiveTab] = React.useState(() => {
-    try { return localStorage.getItem('markip_tab') || 'v1'; } catch { return 'v1'; }
-  });
   const [selectedClasses, setSelectedClasses] = React.useState([35]);
   const [pkg, setPkg] = React.useState('pro');
   const [brand, setBrand] = React.useState('');
@@ -266,20 +263,6 @@ function App() {
   const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
 
   React.useEffect(() => { applyColorScheme(tweaks.colorScheme); }, [tweaks.colorScheme]);
-  React.useEffect(() => {
-    try { localStorage.setItem('markip_tab', activeTab); } catch {}
-  }, [activeTab]);
-
-  // Sync tabs in DOM
-  React.useEffect(() => {
-    document.querySelectorAll('.shell-tab').forEach(b => {
-      b.classList.toggle('active', b.dataset.tab === activeTab);
-      b.onclick = () => setActiveTab(b.dataset.tab);
-    });
-    document.querySelectorAll('.stage').forEach(s => {
-      s.classList.toggle('active', s.id === activeTab + '-stage');
-    });
-  }, [activeTab]);
 
   // Edit mode protocol
   React.useEffect(() => {
@@ -339,8 +322,6 @@ function App() {
         tweaksEl
       )}
       {renderStage(window.V1, 'v1')}
-      {renderStage(window.V2, 'v2')}
-      {renderStage(window.V3, 'v3')}
     </>
   );
 }
