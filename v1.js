@@ -31,9 +31,6 @@ const V1 = ({
   } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
   const brandImg = 'markip-wordmark-white.png';
-  const pctHonorarios = honorariosSubtotal / total * 100;
-  const pctInicio = tasaInicioTotal / total * 100;
-  const pctFinal = tasaFinalTotal / total * 100;
   const classNumbers = selectedClassesData.map(c => c.id).join(', ');
   const timeline = [{
     label: 'Presentación',
@@ -162,39 +159,7 @@ const V1 = ({
     className: "v1-line-sub"
   }, classes, " \xD7 2 UTM \xB7 ", formatCLP(tasaFinalPorClase), " c/u")), /*#__PURE__*/React.createElement("div", {
     className: "v1-line-val"
-  }, formatCLP(tasaFinalTotal)))), showChart && /*#__PURE__*/React.createElement("div", {
-    className: "v1-card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "v1-card-title"
-  }, "Composici\xF3n del total (", formatCLP(total), ")"), /*#__PURE__*/React.createElement("div", {
-    className: "v1-bar"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "v1-bar-seg v1-bar-honorarios",
-    style: {
-      width: pctHonorarios + '%'
-    },
-    title: 'Honorarios ' + pctHonorarios.toFixed(0) + '%'
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "v1-bar-seg v1-bar-inicio",
-    style: {
-      width: pctInicio + '%'
-    },
-    title: 'Inicio ' + pctInicio.toFixed(0) + '%'
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "v1-bar-seg v1-bar-final",
-    style: {
-      width: pctFinal + '%'
-    },
-    title: 'Final ' + pctFinal.toFixed(0) + '%'
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "v1-legend"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
-    className: "v1-leg-sw v1-bar-honorarios"
-  }), " Honorarios Markip \xB7 ", pctHonorarios.toFixed(0), "%"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
-    className: "v1-leg-sw v1-bar-inicio"
-  }), " Tasa inicio \xB7 ", pctInicio.toFixed(0), "%"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
-    className: "v1-leg-sw v1-bar-final"
-  }), " Tasa final \xB7 ", pctFinal.toFixed(0), "%")))), /*#__PURE__*/React.createElement("section", {
+  }, formatCLP(tasaFinalTotal))))), /*#__PURE__*/React.createElement("section", {
     className: "v1-services"
   }, /*#__PURE__*/React.createElement("div", {
     className: "v1-services-head"
@@ -502,33 +467,6 @@ const v1Styles = `
   padding-top: 12px;
   border-top: 1px solid var(--ink-200);
   line-height: 1.5;
-}
-
-.v1-bar {
-  display: flex;
-  height: 12px;
-  border-radius: 100px;
-  overflow: hidden;
-  margin-bottom: 16px;
-  background: var(--ink-100);
-}
-.v1-bar-seg { height: 100%; transition: width 0.3s; }
-.v1-bar-honorarios { background: var(--purple-600); }
-.v1-bar-inicio { background: var(--purple-300); }
-.v1-bar-final { background: var(--teal-400); }
-.v1-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--ink-700);
-}
-.v1-leg-sw {
-  display: inline-block;
-  width: 10px; height: 10px;
-  border-radius: 3px;
-  margin-right: 8px;
-  vertical-align: middle;
 }
 
 .v1-services {
