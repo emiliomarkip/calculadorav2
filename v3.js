@@ -29,7 +29,7 @@ const V3 = ({
   const {
     formatCLP
   } = window.MarkipCalc;
-  const brandImg = 'markip-logo-white.png';
+  const brandImg = 'markip-wordmark-white.png';
   const visibleTags = selectedClassesData.slice(0, 4);
   const hiddenTagCount = selectedClassesData.length - visibleTags.length;
   return /*#__PURE__*/React.createElement("div", {
@@ -293,7 +293,7 @@ const v3Styles = `
   align-items: center;
 }
 .v3-brand-img {
-  height: 34px;
+  height: 30px;
   width: auto;
   display: block;
 }
