@@ -13,6 +13,7 @@ const V1 = ({
     honorariosClasesExtra,
     honorariosClaseAdicional,
     descuento,
+    descuentoPct,
     honorariosSubtotal,
     tasaInicioTotal,
     tasaFinalTotal,
@@ -110,9 +111,9 @@ const V1 = ({
     className: "v1-line v1-line-discount"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "v1-line-label"
-  }, "Descuento"), /*#__PURE__*/React.createElement("div", {
+  }, "Descuento (", descuentoPct, "%)"), /*#__PURE__*/React.createElement("div", {
     className: "v1-line-sub"
-  }, "Aplicado a honorarios")), /*#__PURE__*/React.createElement("div", {
+  }, descuentoPct, "% sobre honorarios \xB7 \u2212", formatCLP(descuento))), /*#__PURE__*/React.createElement("div", {
     className: "v1-line-val"
   }, "\u2212", formatCLP(descuento))), /*#__PURE__*/React.createElement("div", {
     className: "v1-line"

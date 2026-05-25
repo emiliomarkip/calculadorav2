@@ -2,7 +2,7 @@
 // Formal, editorial, con tipografía display. Sin pie chart — usa barra proporcional minimal.
 
 const V1 = ({ state, showChart }) => {
-  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
+  const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, descuentoPct, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
   const brandImg = 'markip-wordmark-white.png';
@@ -107,8 +107,8 @@ const V1 = ({ state, showChart }) => {
             {descuento > 0 && (
               <div className="v1-line v1-line-discount">
                 <div>
-                  <div className="v1-line-label">Descuento</div>
-                  <div className="v1-line-sub">Aplicado a honorarios</div>
+                  <div className="v1-line-label">Descuento ({descuentoPct}%)</div>
+                  <div className="v1-line-sub">{descuentoPct}% sobre honorarios · −{formatCLP(descuento)}</div>
                 </div>
                 <div className="v1-line-val">−{formatCLP(descuento)}</div>
               </div>

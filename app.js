@@ -158,7 +158,9 @@ function Controls({
 }) {
   const onDiscountChange = e => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
-    setDiscount(raw === '' ? 0 : parseInt(raw, 10));
+    let n = raw === '' ? 0 : parseInt(raw, 10);
+    if (n > 100) n = 100;
+    setDiscount(n);
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "control"
@@ -189,13 +191,13 @@ function Controls({
     className: "control"
   }, /*#__PURE__*/React.createElement("label", {
     className: "control-label"
-  }, "Descuento (CLP)"), /*#__PURE__*/React.createElement("input", {
+  }, "Descuento (%)"), /*#__PURE__*/React.createElement("input", {
     className: "control-input control-discount",
     type: "text",
     inputMode: "numeric",
-    value: discount ? discount.toLocaleString('es-CL') : '',
+    value: discount ? discount + '%' : '',
     onChange: onDiscountChange,
-    placeholder: "0"
+    placeholder: "0%"
   })), /*#__PURE__*/React.createElement("div", {
     className: "control"
   }, /*#__PURE__*/React.createElement("label", {
@@ -248,7 +250,7 @@ function App() {
   const state = React.useMemo(() => window.MarkipCalc.calcFees({
     packageId: pkg,
     classes: classCount,
-    discount
+    discountPct: discount
   }), [pkg, classCount, discount]);
   const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
   React.useEffect(() => {
