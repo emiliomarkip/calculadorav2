@@ -4,7 +4,7 @@ const UTM_CLP = 70588; // Valor UTM
 const PACKAGES = {
   pro: {
     id: 'pro',
-    name: 'Markip Pro',
+    name: 'Markip',
     base: 240000,
     tagline: 'El más elegido',
     popular: true,

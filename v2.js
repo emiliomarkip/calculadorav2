@@ -29,7 +29,7 @@ const V2 = ({
   const {
     formatCLP
   } = window.MarkipCalc;
-  const MarkipLogo = window.MarkipLogo || null;
+  const brandImg = 'markip-logo.png';
   const pctMarkip = honorariosSubtotal / total * 100;
   const pctEstado = (tasaInicioTotal + tasaFinalTotal) / total * 100;
   const classLabel = selectedClassesData.length === 1 ? `Clase ${selectedClassesData[0].id}` : `${selectedClassesData.length} clases`;
@@ -41,11 +41,11 @@ const V2 = ({
     className: "v2-kicker"
   }, "Cotizaci\xF3n \xB7 Registro de Marca"), /*#__PURE__*/React.createElement("h1", {
     className: "v2-title"
-  }, /*#__PURE__*/React.createElement("span", {
+  }, state.brand ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
     className: "v2-title-brand"
-  }, state.brand || 'Sin nombre'), /*#__PURE__*/React.createElement("span", {
+  }, state.brand), /*#__PURE__*/React.createElement("span", {
     className: "v2-title-sep"
-  }, "\xB7"), /*#__PURE__*/React.createElement("span", {
+  }, "\xB7")) : null, /*#__PURE__*/React.createElement("span", {
     className: "v2-title-class"
   }, classLabel)), /*#__PURE__*/React.createElement("div", {
     className: "v2-sub"
@@ -53,7 +53,9 @@ const V2 = ({
     day: '2-digit',
     month: 'long',
     year: 'numeric'
-  })), description ? /*#__PURE__*/React.createElement("div", {
+  })), state.clientName ? /*#__PURE__*/React.createElement("div", {
+    className: "v2-client"
+  }, "Preparado para ", state.clientName) : null, description ? /*#__PURE__*/React.createElement("div", {
     className: "v2-description"
   }, description) : null, selectedClassesData.length > 1 && /*#__PURE__*/React.createElement("div", {
     className: "v2-class-pills"
@@ -62,13 +64,15 @@ const V2 = ({
     className: "v2-class-pill"
   }, /*#__PURE__*/React.createElement("span", {
     className: "v2-class-pill-num"
-  }, c.id), /*#__PURE__*/React.createElement("span", {
-    className: "v2-class-pill-name"
-  }, c.name))))), /*#__PURE__*/React.createElement("div", {
+  }, "Clase ", c.id))))), /*#__PURE__*/React.createElement("div", {
     className: "v2-header-right"
-  }, MarkipLogo && /*#__PURE__*/React.createElement("div", {
+  }, brandImg && /*#__PURE__*/React.createElement("div", {
     className: "v2-logo-area"
-  }, /*#__PURE__*/React.createElement(MarkipLogo, null)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("img", {
+    src: brandImg,
+    alt: "Markip",
+    className: "v2-brand-img"
+  })), /*#__PURE__*/React.createElement("div", {
     className: "v2-primary-cta"
   }, /*#__PURE__*/React.createElement("div", {
     className: "v2-cta-label"
@@ -180,16 +184,7 @@ const V2 = ({
     className: "v2-fase-sub"
   }, classes, " \xD7 2 UTM \xB7 ~6 meses despu\xE9s")), /*#__PURE__*/React.createElement("div", {
     className: "v2-fase-val"
-  }, formatCLP(tasaFinalTotal)))), /*#__PURE__*/React.createElement("div", {
-    className: "v2-estado-note"
-  }, /*#__PURE__*/React.createElement("svg", {
-    viewBox: "0 0 20 20",
-    fill: "currentColor"
-  }, /*#__PURE__*/React.createElement("path", {
-    fillRule: "evenodd",
-    d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z",
-    clipRule: "evenodd"
-  })), /*#__PURE__*/React.createElement("span", null, "Estas tasas son cobradas por el INAPI (gobierno de Chile), no por Markip. UTM actual: ", formatCLP(utm), ".")))), /*#__PURE__*/React.createElement("div", {
+  }, formatCLP(tasaFinalTotal)))))), /*#__PURE__*/React.createElement("div", {
     className: "v2-summary"
   }, /*#__PURE__*/React.createElement("div", {
     className: "v2-pays"
@@ -319,6 +314,7 @@ const v2Styles = `
   font-weight: 400;
 }
 .v2-sub { font-size: 14px; color: var(--ink-500); margin-bottom: 6px; }
+.v2-client { font-size: 13px; color: var(--ink-600); font-weight: 500; }
 .v2-description {
   font-size: 13px;
   color: var(--ink-600);
@@ -360,11 +356,12 @@ const v2Styles = `
   gap: 14px;
 }
 .v2-logo-area {
-  opacity: 0.7;
+  opacity: 1;
 }
-.v2-logo-area .markip-logo-img {
-  height: 36px;
+.v2-brand-img {
+  height: 50px;
   width: auto;
+  display: block;
 }
 
 .v2-primary-cta {

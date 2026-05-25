@@ -5,7 +5,7 @@
 const V3 = ({ state, showChart }) => {
   const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
-  const MarkipLogo = window.MarkipLogo || null;
+  const brandImg = 'markip-logo-white.png';
 
   const visibleTags = selectedClassesData.slice(0, 4);
   const hiddenTagCount = selectedClassesData.length - visibleTags.length;
@@ -18,10 +18,7 @@ const V3 = ({ state, showChart }) => {
         <div className="v3-card v3-card-hero">
           <div className="v3-hero-top">
             <div className="v3-brand">
-              {MarkipLogo
-                ? <MarkipLogo white={true} className="v3-logo-svg" />
-                : <><span className="v3-logo">M<sup>®</sup></span><span>Markip</span></>
-              }
+              <img src={brandImg} alt="Markip" className="v3-brand-img" />
             </div>
             <div className="v3-date">
               {new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'short' })}
@@ -29,8 +26,10 @@ const V3 = ({ state, showChart }) => {
           </div>
 
           <div className="v3-hello">
-            <span className="v3-hello-wave">Hola 👋</span>
-            <h1 className="v3-hello-title">Acá está tu cotización para registrar <em>"{state.brand || 'Sin nombre'}"</em></h1>
+            <span className="v3-hello-wave">Hola{state.clientName ? ' ' + state.clientName : ''} 👋</span>
+            <h1 className="v3-hello-title">
+              Acá está tu cotización para registrar {state.brand ? <em>"{state.brand}"</em> : 'tu marca'}
+            </h1>
             {description ? (
               <p className="v3-hello-desc">{description}</p>
             ) : null}
@@ -39,8 +38,7 @@ const V3 = ({ state, showChart }) => {
           <div className="v3-hero-tags">
             {visibleTags.map(c => (
               <span key={c.id} className="v3-tag">
-                <span className="v3-tag-num">{c.id}</span>
-                <span className="v3-tag-name">{c.name}</span>
+                <span className="v3-tag-num">Clase {c.id}</span>
               </span>
             ))}
             {hiddenTagCount > 0 && (
@@ -270,15 +268,13 @@ const v3Styles = `
   position: relative;
 }
 .v3-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 15px;
 }
-.v3-logo-svg.markip-logo-img {
-  height: 38px !important;
-  width: auto !important;
+.v3-brand-img {
+  height: 34px;
+  width: auto;
+  display: block;
 }
 .v3-logo {
   width: 26px; height: 26px;

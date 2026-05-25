@@ -250,8 +250,8 @@ function App() {
   });
   const [selectedClasses, setSelectedClasses] = React.useState([35]);
   const [pkg, setPkg] = React.useState('pro');
-  const [brand, setBrand] = React.useState('Sin nombre');
-  const [clientName, setClientName] = React.useState('Carolina Toro');
+  const [brand, setBrand] = React.useState('');
+  const [clientName, setClientName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [discount, setDiscount] = React.useState(0);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);

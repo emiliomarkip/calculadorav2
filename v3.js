@@ -29,7 +29,7 @@ const V3 = ({
   const {
     formatCLP
   } = window.MarkipCalc;
-  const MarkipLogo = window.MarkipLogo || null;
+  const brandImg = 'markip-logo-white.png';
   const visibleTags = selectedClassesData.slice(0, 4);
   const hiddenTagCount = selectedClassesData.length - visibleTags.length;
   return /*#__PURE__*/React.createElement("div", {
@@ -42,12 +42,11 @@ const V3 = ({
     className: "v3-hero-top"
   }, /*#__PURE__*/React.createElement("div", {
     className: "v3-brand"
-  }, MarkipLogo ? /*#__PURE__*/React.createElement(MarkipLogo, {
-    white: true,
-    className: "v3-logo-svg"
-  }) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
-    className: "v3-logo"
-  }, "M", /*#__PURE__*/React.createElement("sup", null, "\xAE")), /*#__PURE__*/React.createElement("span", null, "Markip"))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("img", {
+    src: brandImg,
+    alt: "Markip",
+    className: "v3-brand-img"
+  })), /*#__PURE__*/React.createElement("div", {
     className: "v3-date"
   }, new Date().toLocaleDateString('es-CL', {
     day: '2-digit',
@@ -56,9 +55,9 @@ const V3 = ({
     className: "v3-hello"
   }, /*#__PURE__*/React.createElement("span", {
     className: "v3-hello-wave"
-  }, "Hola \uD83D\uDC4B"), /*#__PURE__*/React.createElement("h1", {
+  }, "Hola", state.clientName ? ' ' + state.clientName : '', " \uD83D\uDC4B"), /*#__PURE__*/React.createElement("h1", {
     className: "v3-hello-title"
-  }, "Ac\xE1 est\xE1 tu cotizaci\xF3n para registrar ", /*#__PURE__*/React.createElement("em", null, "\"", state.brand || 'Sin nombre', "\"")), description ? /*#__PURE__*/React.createElement("p", {
+  }, "Ac\xE1 est\xE1 tu cotizaci\xF3n para registrar ", state.brand ? /*#__PURE__*/React.createElement("em", null, "\"", state.brand, "\"") : 'tu marca'), description ? /*#__PURE__*/React.createElement("p", {
     className: "v3-hello-desc"
   }, description) : null), /*#__PURE__*/React.createElement("div", {
     className: "v3-hero-tags"
@@ -67,9 +66,7 @@ const V3 = ({
     className: "v3-tag"
   }, /*#__PURE__*/React.createElement("span", {
     className: "v3-tag-num"
-  }, c.id), /*#__PURE__*/React.createElement("span", {
-    className: "v3-tag-name"
-  }, c.name))), hiddenTagCount > 0 && /*#__PURE__*/React.createElement("span", {
+  }, "Clase ", c.id))), hiddenTagCount > 0 && /*#__PURE__*/React.createElement("span", {
     className: "v3-tag v3-tag-outline"
   }, "+", hiddenTagCount, " m\xE1s")), /*#__PURE__*/React.createElement("div", {
     className: "v3-firstpay-card"
@@ -292,15 +289,13 @@ const v3Styles = `
   position: relative;
 }
 .v3-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 15px;
 }
-.v3-logo-svg.markip-logo-img {
-  height: 38px !important;
-  width: auto !important;
+.v3-brand-img {
+  height: 34px;
+  width: auto;
+  display: block;
 }
 .v3-logo {
   width: 26px; height: 26px;
