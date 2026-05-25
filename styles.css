@@ -104,32 +104,6 @@ input, select { font-family: inherit; }
   letter-spacing: 0.01em;
 }
 
-.shell-tabs {
-  display: flex;
-  gap: 4px;
-  background: white;
-  padding: 4px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--ink-200);
-}
-.shell-tab {
-  border: 0;
-  background: transparent;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink-600);
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-.shell-tab:hover { color: var(--ink-900); }
-.shell-tab.active {
-  background: var(--ink-900);
-  color: white;
-}
-
 .variation-label {
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -486,5 +460,4 @@ input, select { font-family: inherit; }
 @media (max-width: 640px) {
   .shell { padding: 12px; }
   .shell-header { gap: 12px; }
-  .shell-tabs { flex: 1 1 100%; justify-content: center; overflow-x: auto; }
 }
