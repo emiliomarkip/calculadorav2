@@ -29,31 +29,36 @@ const V1 = ({
     formatCLP
   } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
+  const brandImg = window.MARKIP_BRAND_IMG;
   const pctHonorarios = honorariosSubtotal / total * 100;
   const pctInicio = tasaInicioTotal / total * 100;
   const pctFinal = tasaFinalTotal / total * 100;
-  const visibleClasses = selectedClassesData.slice(0, 3);
-  const hiddenCount = selectedClassesData.length - visibleClasses.length;
+  const classNumbers = selectedClassesData.map(c => c.id).join(', ');
   return /*#__PURE__*/React.createElement("div", {
     className: "v1"
   }, /*#__PURE__*/React.createElement("style", null, v1Styles), /*#__PURE__*/React.createElement("div", {
     className: "v1-grid"
   }, /*#__PURE__*/React.createElement("section", {
     className: "v1-hero"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, brandImg && /*#__PURE__*/React.createElement("div", {
+    className: "v1-brandbar"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: brandImg,
+    alt: "Markip",
+    className: "v1-brand-img"
+  })), /*#__PURE__*/React.createElement("div", {
     className: "v1-hero-label"
   }, /*#__PURE__*/React.createElement("span", {
     className: "v1-dot"
   }), "Cotizaci\xF3n de Registro de Marca"), /*#__PURE__*/React.createElement("div", {
     className: "v1-hero-meta"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, state.brand ? /*#__PURE__*/React.createElement("div", {
     className: "v1-meta-row"
-  }, /*#__PURE__*/React.createElement("span", null, "Marca"), /*#__PURE__*/React.createElement("strong", null, state.brand || 'Sin nombre')), visibleClasses.map(c => /*#__PURE__*/React.createElement("div", {
-    className: "v1-meta-row",
-    key: c.id
-  }, /*#__PURE__*/React.createElement("span", null, "Clase ", c.id), /*#__PURE__*/React.createElement("strong", null, c.name))), hiddenCount > 0 && /*#__PURE__*/React.createElement("div", {
-    className: "v1-meta-row v1-meta-more"
-  }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("strong", null, "+", hiddenCount, " clase", hiddenCount > 1 ? 's' : '', " m\xE1s")), description ? /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, "Marca"), /*#__PURE__*/React.createElement("strong", null, state.brand)) : null, state.clientName ? /*#__PURE__*/React.createElement("div", {
+    className: "v1-meta-row"
+  }, /*#__PURE__*/React.createElement("span", null, "Cliente"), /*#__PURE__*/React.createElement("strong", null, state.clientName)) : null, selectedClassesData.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "v1-meta-row"
+  }, /*#__PURE__*/React.createElement("span", null, "Clase", selectedClassesData.length > 1 ? 's' : ''), /*#__PURE__*/React.createElement("strong", null, classNumbers)), description ? /*#__PURE__*/React.createElement("div", {
     className: "v1-meta-row v1-meta-desc"
   }, /*#__PURE__*/React.createElement("span", null, "Descripci\xF3n"), /*#__PURE__*/React.createElement("strong", {
     className: "v1-meta-desc-text"
@@ -133,9 +138,7 @@ const V1 = ({
     className: "v1-line-sub"
   }, classes, " \xD7 2 UTM \xB7 ", formatCLP(tasaFinalPorClase), " c/u")), /*#__PURE__*/React.createElement("div", {
     className: "v1-line-val"
-  }, formatCLP(tasaFinalTotal))), /*#__PURE__*/React.createElement("div", {
-    className: "v1-note"
-  }, "Las tasas son cobradas por el Instituto Nacional de Propiedad Industrial (INAPI), no por Markip. UTM actual: ", formatCLP(utm), ".")), showChart && /*#__PURE__*/React.createElement("div", {
+  }, formatCLP(tasaFinalTotal)))), showChart && /*#__PURE__*/React.createElement("div", {
     className: "v1-card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "v1-card-title"
@@ -213,6 +216,21 @@ const v1Styles = `
   width: 500px; height: 500px;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 60%);
   pointer-events: none;
+}
+.v1-brandbar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  padding: 9px 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+.v1-brand-img {
+  height: 34px;
+  width: auto;
+  display: block;
 }
 .v1-hero-label {
   display: inline-flex;

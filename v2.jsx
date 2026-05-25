@@ -5,7 +5,7 @@
 const V2 = ({ state, showChart }) => {
   const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
-  const MarkipLogo = window.MarkipLogo || null;
+  const brandImg = window.MARKIP_BRAND_IMG;
 
   const pctMarkip = (honorariosSubtotal / total) * 100;
   const pctEstado = ((tasaInicioTotal + tasaFinalTotal) / total) * 100;
@@ -23,13 +23,20 @@ const V2 = ({ state, showChart }) => {
         <div>
           <div className="v2-kicker">Cotización · Registro de Marca</div>
           <h1 className="v2-title">
-            <span className="v2-title-brand">{state.brand || 'Sin nombre'}</span>
-            <span className="v2-title-sep">·</span>
+            {state.brand ? (
+              <>
+                <span className="v2-title-brand">{state.brand}</span>
+                <span className="v2-title-sep">·</span>
+              </>
+            ) : null}
             <span className="v2-title-class">{classLabel}</span>
           </h1>
           <div className="v2-sub">
             Preparado {new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' })}
           </div>
+          {state.clientName ? (
+            <div className="v2-client">Preparado para {state.clientName}</div>
+          ) : null}
           {description ? (
             <div className="v2-description">{description}</div>
           ) : null}
@@ -37,17 +44,16 @@ const V2 = ({ state, showChart }) => {
             <div className="v2-class-pills">
               {selectedClassesData.map(c => (
                 <span key={c.id} className="v2-class-pill">
-                  <span className="v2-class-pill-num">{c.id}</span>
-                  <span className="v2-class-pill-name">{c.name}</span>
+                  <span className="v2-class-pill-num">Clase {c.id}</span>
                 </span>
               ))}
             </div>
           )}
         </div>
         <div className="v2-header-right">
-          {MarkipLogo && (
+          {brandImg && (
             <div className="v2-logo-area">
-              <MarkipLogo />
+              <img src={brandImg} alt="Markip" className="v2-brand-img" />
             </div>
           )}
           <div className="v2-primary-cta">
@@ -133,13 +139,6 @@ const V2 = ({ state, showChart }) => {
               </div>
               <div className="v2-fase-val">{formatCLP(tasaFinalTotal)}</div>
             </div>
-          </div>
-
-          <div className="v2-estado-note">
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
-            <span>Estas tasas son cobradas por el INAPI (gobierno de Chile), no por Markip. UTM actual: {formatCLP(utm)}.</span>
           </div>
         </div>
       </div>
@@ -244,6 +243,7 @@ const v2Styles = `
   font-weight: 400;
 }
 .v2-sub { font-size: 14px; color: var(--ink-500); margin-bottom: 6px; }
+.v2-client { font-size: 13px; color: var(--ink-600); font-weight: 500; }
 .v2-description {
   font-size: 13px;
   color: var(--ink-600);
@@ -285,11 +285,12 @@ const v2Styles = `
   gap: 14px;
 }
 .v2-logo-area {
-  opacity: 0.7;
+  opacity: 1;
 }
-.v2-logo-area .markip-logo-img {
-  height: 36px;
+.v2-brand-img {
+  height: 50px;
   width: auto;
+  display: block;
 }
 
 .v2-primary-cta {

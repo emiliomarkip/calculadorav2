@@ -245,8 +245,8 @@ function App() {
   });
   const [selectedClasses, setSelectedClasses] = React.useState([35]);
   const [pkg, setPkg] = React.useState('pro');
-  const [brand, setBrand] = React.useState('Sin nombre');
-  const [clientName, setClientName] = React.useState('Carolina Toro');
+  const [brand, setBrand] = React.useState('');
+  const [clientName, setClientName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [discount, setDiscount] = React.useState(0);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
@@ -344,6 +344,10 @@ function App() {
     setTweak: setTweak
   }), tweaksEl), renderStage(window.V1, 'v1'), renderStage(window.V2, 'v2'), renderStage(window.V3, 'v3'));
 }
+
+// Imagen de marca Markip (logo prominente) — disponible globalmente
+const MARKIP_BRAND_IMG = "https://lh3.googleusercontent.com/Vlq8om2qtkJQn-AvIDYb1LgfUSlRvuHgjFsm8LJeA64CqXXthD0dRFTqRW6gE1FvyKC417DSkqKaKLoaIzuINv9aMVb84gPB620=s0";
+window.MARKIP_BRAND_IMG = MARKIP_BRAND_IMG;
 
 // MarkipLogo: disponible globalmente para v1/v2/v3
 function MarkipLogo({

@@ -5,13 +5,13 @@ const V1 = ({ state, showChart }) => {
   const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
+  const brandImg = window.MARKIP_BRAND_IMG;
 
   const pctHonorarios = (honorariosSubtotal / total) * 100;
   const pctInicio = (tasaInicioTotal / total) * 100;
   const pctFinal = (tasaFinalTotal / total) * 100;
 
-  const visibleClasses = selectedClassesData.slice(0, 3);
-  const hiddenCount = selectedClassesData.length - visibleClasses.length;
+  const classNumbers = selectedClassesData.map(c => c.id).join(', ');
 
   return (
     <div className="v1">
@@ -20,26 +20,34 @@ const V1 = ({ state, showChart }) => {
       <div className="v1-grid">
         {/* HERO — Primer pago gigante */}
         <section className="v1-hero">
+          {brandImg && (
+            <div className="v1-brandbar">
+              <img src={brandImg} alt="Markip" className="v1-brand-img" />
+            </div>
+          )}
+
           <div className="v1-hero-label">
             <span className="v1-dot" />
             Cotización de Registro de Marca
           </div>
 
           <div className="v1-hero-meta">
-            <div className="v1-meta-row">
-              <span>Marca</span>
-              <strong>{state.brand || 'Sin nombre'}</strong>
-            </div>
-            {visibleClasses.map(c => (
-              <div className="v1-meta-row" key={c.id}>
-                <span>Clase {c.id}</span>
-                <strong>{c.name}</strong>
+            {state.brand ? (
+              <div className="v1-meta-row">
+                <span>Marca</span>
+                <strong>{state.brand}</strong>
               </div>
-            ))}
-            {hiddenCount > 0 && (
-              <div className="v1-meta-row v1-meta-more">
-                <span></span>
-                <strong>+{hiddenCount} clase{hiddenCount > 1 ? 's' : ''} más</strong>
+            ) : null}
+            {state.clientName ? (
+              <div className="v1-meta-row">
+                <span>Cliente</span>
+                <strong>{state.clientName}</strong>
+              </div>
+            ) : null}
+            {selectedClassesData.length > 0 && (
+              <div className="v1-meta-row">
+                <span>Clase{selectedClassesData.length > 1 ? 's' : ''}</span>
+                <strong>{classNumbers}</strong>
               </div>
             )}
             {description ? (
@@ -129,9 +137,6 @@ const V1 = ({ state, showChart }) => {
               </div>
               <div className="v1-line-val">{formatCLP(tasaFinalTotal)}</div>
             </div>
-            <div className="v1-note">
-              Las tasas son cobradas por el Instituto Nacional de Propiedad Industrial (INAPI), no por Markip. UTM actual: {formatCLP(utm)}.
-            </div>
           </div>
 
           {showChart && (
@@ -200,6 +205,21 @@ const v1Styles = `
   width: 500px; height: 500px;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 60%);
   pointer-events: none;
+}
+.v1-brandbar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  padding: 9px 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+.v1-brand-img {
+  height: 34px;
+  width: auto;
+  display: block;
 }
 .v1-hero-label {
   display: inline-flex;
