@@ -29,7 +29,7 @@ const V2 = ({
   const {
     formatCLP
   } = window.MarkipCalc;
-  const brandImg = 'markip-logo.png';
+  const brandImg = 'markip-wordmark-dark.png';
   const pctMarkip = honorariosSubtotal / total * 100;
   const pctEstado = (tasaInicioTotal + tasaFinalTotal) / total * 100;
   const classLabel = selectedClassesData.length === 1 ? `Clase ${selectedClassesData[0].id}` : `${selectedClassesData.length} clases`;
@@ -359,7 +359,7 @@ const v2Styles = `
   opacity: 1;
 }
 .v2-brand-img {
-  height: 50px;
+  height: 44px;
   width: auto;
   display: block;
 }

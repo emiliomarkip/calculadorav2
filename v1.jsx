@@ -5,7 +5,7 @@ const V1 = ({ state, showChart }) => {
   const { pkg, classes, honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
-  const brandImg = 'markip-logo-white.png';
+  const brandImg = 'markip-wordmark-white.png';
 
   const pctHonorarios = (honorariosSubtotal / total) * 100;
   const pctInicio = (tasaInicioTotal / total) * 100;
@@ -211,7 +211,7 @@ const v1Styles = `
   margin-bottom: 26px;
 }
 .v1-brand-img {
-  height: 46px;
+  height: 40px;
   width: auto;
   display: block;
 }
