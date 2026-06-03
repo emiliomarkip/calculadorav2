@@ -1,5 +1,5 @@
 // Shared calculation logic for Markip trademark quote
-const UTM_CLP = 70588; // Valor UTM
+const UTM_CLP = 71506; // Valor UTM
 
 const PACKAGES = {
   pro: {
