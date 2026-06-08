@@ -448,6 +448,178 @@ input, select { font-family: inherit; }
   min-width: 200px;
 }
 
+/* Shell actions (top-right buttons) */
+.shell-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.shell-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--purple-600);
+  color: white;
+  border: 0;
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.shell-btn:hover { background: var(--purple-700); }
+.shell-btn-ghost {
+  background: white;
+  color: var(--ink-800);
+  border: 1px solid var(--ink-200);
+}
+.shell-btn-ghost:hover { background: var(--ink-50); border-color: var(--ink-300); }
+.shell-btn-badge {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  border-radius: 100px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.control-hint {
+  font-weight: 500;
+  color: var(--ink-400);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.class-placeholder {
+  color: var(--ink-400);
+  font-size: 13px;
+  padding: 4px 2px;
+}
+
+/* History drawer */
+.history-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 10, 30, 0.45);
+  z-index: 300;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadein 0.15s ease-out;
+}
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.history-drawer {
+  width: min(440px, 92vw);
+  background: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  animation: slidein 0.2s ease-out;
+}
+@keyframes slidein { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.history-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--ink-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.history-title { font-size: 18px; font-weight: 700; color: var(--ink-900); }
+.history-sub { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
+.history-close {
+  background: transparent;
+  border: 0;
+  font-size: 24px;
+  color: var(--ink-500);
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.history-close:hover { background: var(--ink-100); }
+.history-empty {
+  padding: 32px 24px;
+  color: var(--ink-500);
+  font-size: 13.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.history-item {
+  background: var(--ink-50);
+  border: 1px solid var(--ink-200);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.history-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.history-item-brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink-900);
+}
+.history-item-total {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--purple-700);
+  font-variant-numeric: tabular-nums;
+}
+.history-item-meta {
+  font-size: 12px;
+  color: var(--ink-500);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.history-sep { color: var(--ink-300); }
+.history-item-classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.history-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--purple-100);
+  color: var(--purple-700);
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+.history-item-actions { display: flex; gap: 6px; }
+.history-btn {
+  background: white;
+  border: 1px solid var(--ink-200);
+  color: var(--ink-800);
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.history-btn:hover { border-color: var(--purple-400); color: var(--purple-700); }
+.history-btn-danger:hover { border-color: var(--danger); color: var(--danger); }
+.history-btn-ghost { border-color: transparent; color: var(--ink-500); }
+.history-foot {
+  padding: 12px 20px;
+  border-top: 1px solid var(--ink-200);
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Print */
 @media print {
   .shell-header, .controls, .shell-footer, .tweaks { display: none !important; }
