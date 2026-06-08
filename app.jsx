@@ -207,26 +207,134 @@ function PackagePicker({ pkg, setPkg }) {
   );
 }
 
-function PriorityPicker({ selectedClasses, priorityId, setPriorityId }) {
-  if (selectedClasses.length < 3) return null;
+function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, maxPerMarca, pkg }) {
+  if (pkg !== 'pro' || selectedClasses.length < 2) return null;
+
+  const classLabel = (id) => {
+    const c = ALL_CLASSES.find(x => x.id === id);
+    return c ? c.name : '';
+  };
+
+  const moveClass = (classId, fromIdx, toIdx) => {
+    const target = groups[toIdx];
+    if (!target) return;
+    if (target.length >= maxPerMarca) return;
+    const next = groups.map((g, i) => {
+      if (i === fromIdx) return g.filter(x => x !== classId);
+      if (i === toIdx) return [...g, classId].sort((a, b) => a - b);
+      return g;
+    }).filter(g => g.length > 0);
+    setGroups(next);
+  };
+
+  const moveToNext = (classId, fromIdx) => {
+    let target = fromIdx + 1;
+    while (target < groups.length && groups[target].length >= maxPerMarca) target++;
+    if (target >= groups.length) {
+      // crear nueva marca
+      const next = groups
+        .map((g, i) => i === fromIdx ? g.filter(x => x !== classId) : g)
+        .filter(g => g.length > 0);
+      next.push([classId]);
+      setGroups(next);
+    } else {
+      moveClass(classId, fromIdx, target);
+    }
+  };
+
+  const removeClass = (classId) => {
+    setSelectedClasses(selectedClasses.filter(x => x !== classId));
+  };
+
+  const makePriority = (idx) => {
+    if (idx === 0) return;
+    const next = [groups[idx], ...groups.filter((_, i) => i !== idx)];
+    setGroups(next);
+  };
+
+  const addEmptyMarca = () => setGroups([...groups, []]);
+
+  const removeMarca = (idx) => {
+    if (groups.length <= 1) return;
+    const removed = groups[idx];
+    let next = groups.filter((_, i) => i !== idx);
+    // redistribuye las clases huérfanas en los buckets restantes con espacio
+    for (const id of removed) {
+      let placed = false;
+      for (const g of next) {
+        if (g.length < maxPerMarca) { g.push(id); g.sort((a, b) => a - b); placed = true; break; }
+      }
+      if (!placed) next.push([id]);
+    }
+    setGroups(next);
+  };
+
   return (
-    <div className="control">
-      <label className="control-label">Clase prioritaria (queda sola en su marca)</label>
-      <select
-        className="control-select"
-        value={priorityId ?? selectedClasses[0]}
-        onChange={e => setPriorityId(parseInt(e.target.value, 10))}
-      >
-        {selectedClasses.map(id => {
-          const c = ALL_CLASSES.find(x => x.id === id);
-          return <option key={id} value={id}>Clase {id} — {c ? c.name : ''}</option>;
-        })}
-      </select>
+    <div className="control control-full">
+      <label className="control-label">
+        Marcas a presentar
+        <span className="control-hint"> · máx {maxPerMarca} clase{maxPerMarca > 1 ? 's' : ''} por marca · la primera es prioritaria</span>
+      </label>
+      <div className="marca-builder">
+        {groups.map((g, idx) => (
+          <div key={idx} className={'marca-bucket' + (idx === 0 ? ' marca-bucket-priority' : '')}>
+            <div className="marca-bucket-head">
+              <span className="marca-bucket-title">
+                Marca {idx + 1}
+                {idx === 0 && <span className="marca-bucket-badge">prioritaria</span>}
+              </span>
+              <div className="marca-bucket-actions">
+                {idx !== 0 && (
+                  <button type="button" className="marca-action" onClick={() => makePriority(idx)} title="Hacer prioritaria">
+                    ★
+                  </button>
+                )}
+                {groups.length > 1 && (
+                  <button type="button" className="marca-action marca-action-danger" onClick={() => removeMarca(idx)} title="Eliminar marca">
+                    🗑
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="marca-bucket-body">
+              {g.length === 0 && <span className="marca-empty">Vacía · mueve clases aquí</span>}
+              {g.map(id => (
+                <span key={id} className="marca-chip" title={classLabel(id)}>
+                  <span className="marca-chip-num">{id}</span>
+                  <span className="marca-chip-name">{classLabel(id)}</span>
+                  {groups.length > 1 && (
+                    <button
+                      type="button"
+                      className="marca-chip-btn"
+                      onClick={() => moveToNext(id, idx)}
+                      title="Mover a siguiente marca"
+                      aria-label="Mover a siguiente marca"
+                    >→</button>
+                  )}
+                  <button
+                    type="button"
+                    className="marca-chip-btn marca-chip-x"
+                    onClick={() => removeClass(id)}
+                    title="Quitar clase"
+                    aria-label="Quitar clase"
+                  >×</button>
+                </span>
+              ))}
+            </div>
+            <div className="marca-bucket-foot">
+              {g.length} / {maxPerMarca} clases
+            </div>
+          </div>
+        ))}
+        <button type="button" className="marca-add" onClick={addEmptyMarca}>
+          + Nueva marca
+        </button>
+      </div>
     </div>
   );
 }
 
-function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, priorityId, setPriorityId }) {
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca }) {
   const onDiscountChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
     let n = raw === '' ? 0 : parseInt(raw, 10);
@@ -270,13 +378,14 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, set
           maxSelectable={classMax}
         />
       </div>
-      {pkg === 'pro' && (
-        <PriorityPicker
-          selectedClasses={selectedClasses}
-          priorityId={priorityId}
-          setPriorityId={setPriorityId}
-        />
-      )}
+      <MarcaBuilder
+        selectedClasses={selectedClasses}
+        groups={groups}
+        setGroups={setGroups}
+        setSelectedClasses={setSelectedClasses}
+        maxPerMarca={maxPerMarca}
+        pkg={pkg}
+      />
       <div className="control">
         <label className="control-label">Descuento (%)</label>
         <input
@@ -394,7 +503,7 @@ function App() {
   const [clientName, setClientName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [discount, setDiscount] = React.useState(0);
-  const [priorityId, setPriorityId] = React.useState(null);
+  const [marcaGroups, setMarcaGroups] = React.useState([[35]]);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
   const [historyOpen, setHistoryOpen] = React.useState(false);
@@ -416,19 +525,48 @@ function App() {
   }, [pkg, userOverrodeColor]);
 
   const maxPerMarca = PKGS[pkg].maxClassesPerMarca || 99;
-  const groups = React.useMemo(() => {
-    if (selectedClasses.length === 0) return [];
-    return window.MarkipCalc.autoSplitClasses(selectedClasses, maxPerMarca, priorityId);
-  }, [selectedClasses, maxPerMarca, priorityId]);
+
+  // Sincroniza marcaGroups con selectedClasses + maxPerMarca.
+  // Las clases nuevas se añaden a la primera marca con espacio (o se crea una nueva).
+  // Las clases ya no seleccionadas se eliminan. Marcas con sobrecupo se rebalancean.
+  React.useEffect(() => {
+    const selected = new Set(selectedClasses);
+    let next = marcaGroups.map(g => g.filter(id => selected.has(id)));
+    // Overflow por cambio de maxPerMarca (ej: pro→básico)
+    const overflow = [];
+    next = next.map(g => {
+      if (g.length > maxPerMarca) {
+        overflow.push(...g.slice(maxPerMarca));
+        return g.slice(0, maxPerMarca);
+      }
+      return g;
+    });
+    const present = new Set(next.flat());
+    const missing = selectedClasses.filter(id => !present.has(id));
+    const toPlace = [...missing, ...overflow];
+    for (const id of toPlace) {
+      let placed = false;
+      for (const g of next) {
+        if (g.length < maxPerMarca) { g.push(id); g.sort((a, b) => a - b); placed = true; break; }
+      }
+      if (!placed) next.push([id]);
+    }
+    if (next.length === 0) next = [[]];
+    if (JSON.stringify(next) !== JSON.stringify(marcaGroups)) {
+      setMarcaGroups(next);
+    }
+  }, [selectedClasses, maxPerMarca]);
+
+  const groupsForCalc = marcaGroups.filter(g => g.length > 0);
 
   const state = React.useMemo(
     () => window.MarkipCalc.calcFees({
       packageId: pkg,
       classes: selectedClasses.length,
-      groups: groups.length > 0 ? groups : null,
+      groups: groupsForCalc.length > 0 ? groupsForCalc : null,
       discountPct: discount,
     }),
-    [pkg, selectedClasses, groups, discount]
+    [pkg, selectedClasses, marcaGroups, discount]
   );
 
   const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
@@ -460,7 +598,7 @@ function App() {
       createdAt: new Date().toISOString(),
       pkg,
       classes: selectedClasses,
-      priorityId,
+      marcaGroups,
       brand,
       clientName,
       description,
@@ -479,7 +617,7 @@ function App() {
   const loadQuote = (it) => {
     setPkg(it.pkg);
     setSelectedClasses(it.classes || []);
-    setPriorityId(it.priorityId ?? null);
+    if (it.marcaGroups) setMarcaGroups(it.marcaGroups);
     setBrand(it.brand || '');
     setClientName(it.clientName || '');
     setDescription(it.description || '');
@@ -528,7 +666,8 @@ function App() {
           clientName={clientName} setClientName={setClientName}
           description={description} setDescription={setDescription}
           discount={discount} setDiscount={setDiscount}
-          priorityId={priorityId} setPriorityId={setPriorityId}
+          groups={marcaGroups} setGroups={setMarcaGroups}
+          maxPerMarca={maxPerMarca}
         />,
         controlsEl
       )}
