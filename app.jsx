@@ -76,7 +76,7 @@ function applyColorScheme(scheme) {
 }
 
 const ALL_CLASSES = window.MarkipCalc.TRADEMARK_CLASSES;
-const PACKAGES = window.MarkipCalc.PACKAGES;
+const PKGS = window.MarkipCalc.PACKAGES;
 const HISTORY_KEY = 'markip_quote_history_v1';
 
 function loadHistory() {
@@ -193,7 +193,7 @@ function ClassSelector({ selectedIds, onChange, maxSelectable = null }) {
 function PackagePicker({ pkg, setPkg }) {
   return (
     <div className="pkg-toggle">
-      {Object.values(PACKAGES).map(p => (
+      {Object.values(PKGS).map(p => (
         <button
           key={p.id}
           className={pkg === p.id ? 'active' : ''}
@@ -233,7 +233,7 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, set
     if (n > 100) n = 100;
     setDiscount(n);
   };
-  const pkgDef = PACKAGES[pkg];
+  const pkgDef = PKGS[pkg];
   const classMax = pkg === 'basico' ? 1 : null;
   return (
     <>
@@ -359,7 +359,7 @@ function HistoryPanel({ open, onClose, items, onLoad, onDelete, onClear }) {
                 <div className="history-item-meta">
                   <span>{new Date(it.createdAt).toLocaleString('es-CL')}</span>
                   <span className="history-sep">·</span>
-                  <span>{PACKAGES[it.pkg]?.name || it.pkg}</span>
+                  <span>{PKGS[it.pkg]?.name || it.pkg}</span>
                   <span className="history-sep">·</span>
                   <span>{it.classes.length} clase{it.classes.length === 1 ? '' : 's'}</span>
                   {it.clientName && <><span className="history-sep">·</span><span>{it.clientName}</span></>}
@@ -415,7 +415,7 @@ function App() {
     setTweaks(t => ({ ...t, colorScheme: pkg === 'basico' ? 'amber' : 'purple' }));
   }, [pkg, userOverrodeColor]);
 
-  const maxPerMarca = PACKAGES[pkg].maxClassesPerMarca || 99;
+  const maxPerMarca = PKGS[pkg].maxClassesPerMarca || 99;
   const groups = React.useMemo(() => {
     if (selectedClasses.length === 0) return [];
     return window.MarkipCalc.autoSplitClasses(selectedClasses, maxPerMarca, priorityId);
