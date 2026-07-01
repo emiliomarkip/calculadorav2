@@ -1,10 +1,11 @@
 // Variation 1: "Protagonista" — El primer pago es enorme y central.
 
-const V1 = ({ state, showChart }) => {
+const V1 = ({ state, showChart, mode = 'actual' }) => {
   const { pkg, classes, marcas = [], honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, descuentoPct, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, diarioOficial, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
-  const brandImg = 'markip-wordmark-white.png';
+  const isFormal = mode === 'formal';
+  const brandImg = isFormal ? 'markip-wordmark-dark.png' : 'markip-wordmark-white.png';
 
   const classNumbers = selectedClassesData.map(c => c.id).join(', ');
   const isBasico = pkg.id === 'basico';
@@ -31,8 +32,26 @@ const V1 = ({ state, showChart }) => {
   ];
   const timeline = isBasico ? timelineBasico : timelinePro;
 
+  const includesFormalPro = [
+    'Búsqueda de choques fonéticos y análisis de viabilidad',
+    'Estrategia de presentación de marca',
+    'Ingreso y seguimiento de la solicitud ante INAPI',
+    { bold: 'Oposiciones y Defensas', text: ' ante terceros y observaciones de fondo' },
+    'Gestión de pago de tasas',
+    'Emisión y entrega del certificado de registro',
+    'Monitoreo de la marca por 10 años de vigencia',
+  ];
+  const includesFormalBasico = [
+    'Búsqueda de choques fonéticos y análisis de viabilidad',
+    'Ingreso y seguimiento de la solicitud ante INAPI',
+    'Gestión de pago de tasas',
+    'Emisión y entrega del certificado de registro',
+    'Monitoreo de la marca por 10 años de vigencia',
+  ];
+  const includesFormal = isBasico ? includesFormalBasico : includesFormalPro;
+
   return (
-    <div className={'v1' + (isBasico ? ' v1-basico' : '')}>
+    <div className={'v1' + (isBasico ? ' v1-basico' : '') + (isFormal ? ' v1-formal' : '')}>
       <style>{v1Styles}</style>
 
       <div className="v1-grid">
@@ -233,32 +252,45 @@ const V1 = ({ state, showChart }) => {
             </p>
           </div>
 
-          <div className={'v1-timeline v1-timeline-' + timeline.length}>
-            {timeline.map((st, i) => {
-              const isHot = !!st.highlights;
-              return (
-                <div className={'v1-tl-stage' + (isHot ? ' v1-tl-stage-hot' : '')} key={i}>
-                  <div className="v1-tl-track">
-                    <span className="v1-tl-line" />
-                    <span className="v1-tl-node">{i + 1}</span>
+          {isFormal ? (
+            <ul className="v1-includes-list">
+              {includesFormal.map((item, i) => (
+                <li className="v1-includes-item" key={i}>
+                  <span className="v1-includes-mark">–</span>
+                  <span>
+                    {typeof item === 'string' ? item : (<><b>{item.bold}</b>{item.text}</>)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className={'v1-timeline v1-timeline-' + timeline.length}>
+              {timeline.map((st, i) => {
+                const isHot = !!st.highlights;
+                return (
+                  <div className={'v1-tl-stage' + (isHot ? ' v1-tl-stage-hot' : '')} key={i}>
+                    <div className="v1-tl-track">
+                      <span className="v1-tl-line" />
+                      <span className="v1-tl-node">{i + 1}</span>
+                    </div>
+                    <div className="v1-tl-tag">{st.tag}</div>
+                    <div className="v1-tl-label">{st.label}</div>
+                    <ul className="v1-tl-services">
+                      {st.services.map((s, j) => {
+                        const hot = st.highlights && st.highlights.includes(s);
+                        return (
+                          <li key={j} className={'v1-tl-service' + (hot ? ' v1-tl-service-hot' : '')}>
+                            <span className="v1-tl-mark">{hot ? '★' : '✓'}</span>
+                            <span className="v1-tl-text">{s}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
-                  <div className="v1-tl-tag">{st.tag}</div>
-                  <div className="v1-tl-label">{st.label}</div>
-                  <ul className="v1-tl-services">
-                    {st.services.map((s, j) => {
-                      const hot = st.highlights && st.highlights.includes(s);
-                      return (
-                        <li key={j} className={'v1-tl-service' + (hot ? ' v1-tl-service-hot' : '')}>
-                          <span className="v1-tl-mark">{hot ? '★' : '✓'}</span>
-                          <span className="v1-tl-text">{s}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       </div>
     </div>
@@ -546,6 +578,41 @@ const v1Styles = `
   color: var(--ink-900); font-weight: 600;
 }
 .v1-tl-service-hot .v1-tl-mark { color: #f59e0b; }
+
+.v1-includes-list { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 32px; }
+.v1-includes-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--ink-100);
+  font-size: 14px; color: var(--ink-700); line-height: 1.4;
+  break-inside: avoid;
+}
+.v1-includes-mark { color: var(--ink-900); font-weight: 700; flex-shrink: 0; }
+.v1-includes-item b { color: var(--ink-900); font-weight: 700; }
+
+/* Modo formal: mismo layout, blanco y negro */
+.v1-formal.v1-basico .v1-hero,
+.v1-formal .v1-hero {
+  background: linear-gradient(155deg, #0d0d0d 0%, #242424 60%, #3c3c3c 100%);
+}
+.v1-formal .v1-hero::before { display: none; }
+.v1-formal .v1-brand-img { filter: invert(1) brightness(2); }
+.v1-formal .v1-plan-badge { border-color: rgba(255,255,255,0.25); }
+.v1-formal .v1-dot, .v1-formal.v1-basico .v1-dot { background: #ffffff; box-shadow: 0 0 0 4px rgba(255,255,255,0.2); }
+.v1-formal .v1-firstpay-kicker, .v1-formal.v1-basico .v1-firstpay-kicker { color: rgba(255,255,255,0.85); }
+.v1-formal .v1-amount-num, .v1-formal.v1-basico .v1-amount-num {
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+}
+.v1-formal .v1-logo-watermark img { filter: invert(1) brightness(2); }
+.v1-formal .v1-total-val { color: var(--ink-900); }
+.v1-formal .v1-card-warn { background: var(--ink-50); border-color: var(--ink-300); }
+.v1-formal .v1-card-warn .v1-card-title { color: var(--ink-900); }
+.v1-formal .v1-card-cta { background: var(--ink-50); border-color: var(--ink-300); }
+.v1-formal .v1-cta-kicker { color: var(--ink-700); }
+.v1-formal .v1-cta-title { color: var(--ink-900); }
+.v1-formal .v1-marca-name { color: var(--ink-900); }
+.v1-formal .v1-marca-tag { background: var(--ink-100); color: var(--ink-900); }
 
 @media (max-width: 960px) {
   .v1-grid { grid-template-columns: 1fr; }

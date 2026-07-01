@@ -207,6 +207,28 @@ function PackagePicker({ pkg, setPkg }) {
   );
 }
 
+const DISPLAY_MODES = [
+  { id: 'actual', label: 'Actual' },
+  { id: 'formal', label: 'Formal' },
+];
+
+function DisplayModePicker({ mode, setMode }) {
+  return (
+    <div className="pkg-toggle">
+      {DISPLAY_MODES.map(m => (
+        <button
+          key={m.id}
+          className={mode === m.id ? 'active' : ''}
+          onClick={() => setMode(m.id)}
+          type="button"
+        >
+          {m.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, maxPerMarca, pkg }) {
   if (pkg !== 'pro' || selectedClasses.length < 2) return null;
 
@@ -334,7 +356,7 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
   );
 }
 
-function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca }) {
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca }) {
   const onDiscountChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
     let n = raw === '' ? 0 : parseInt(raw, 10);
@@ -348,6 +370,10 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, brand, set
       <div className="control">
         <label className="control-label">Plan</label>
         <PackagePicker pkg={pkg} setPkg={setPkg} />
+      </div>
+      <div className="control">
+        <label className="control-label">Estilo</label>
+        <DisplayModePicker mode={displayMode} setMode={setDisplayMode} />
       </div>
       <div className="control">
         <label className="control-label">Cliente</label>
@@ -499,6 +525,7 @@ function HistoryPanel({ open, onClose, items, onLoad, onDelete, onClear }) {
 function App() {
   const [selectedClasses, setSelectedClasses] = React.useState([35]);
   const [pkg, setPkg] = React.useState('pro');
+  const [displayMode, setDisplayMode] = React.useState('actual');
   const [brand, setBrand] = React.useState('');
   const [clientName, setClientName] = React.useState('');
   const [description, setDescription] = React.useState('');
@@ -597,6 +624,7 @@ function App() {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       createdAt: new Date().toISOString(),
       pkg,
+      displayMode,
       classes: selectedClasses,
       marcaGroups,
       brand,
@@ -616,6 +644,7 @@ function App() {
 
   const loadQuote = (it) => {
     setPkg(it.pkg);
+    setDisplayMode(it.displayMode || 'actual');
     setSelectedClasses(it.classes || []);
     if (it.marcaGroups) setMarcaGroups(it.marcaGroups);
     setBrand(it.brand || '');
@@ -642,6 +671,7 @@ function App() {
       <StageComp
         state={{ ...state, brand, clientName, selectedClassesData, description }}
         showChart={tweaks.showChart}
+        mode={displayMode}
       />,
       el
     ) : null;
@@ -662,6 +692,7 @@ function App() {
         <Controls
           selectedClasses={selectedClasses} setSelectedClasses={setSelectedClasses}
           pkg={pkg} setPkg={setPkg}
+          displayMode={displayMode} setDisplayMode={setDisplayMode}
           brand={brand} setBrand={setBrand}
           clientName={clientName} setClientName={setClientName}
           description={description} setDescription={setDescription}
