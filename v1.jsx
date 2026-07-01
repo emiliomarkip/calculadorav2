@@ -563,6 +563,19 @@ const v1Styles = `
   .v1-amount-num { font-size: 56px; }
   .v1-services { padding: 20px; }
 }
+
+@media print {
+  .v1-hero, .v1-card, .v1-cta {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  .v1-amount-num, .v1-basico .v1-amount-num {
+    background: none !important;
+    -webkit-text-fill-color: white !important;
+    color: white !important;
+  }
+}
 `;
 
 window.V1 = V1;
