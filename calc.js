@@ -1,5 +1,5 @@
 // Shared calculation logic for Markip trademark quote
-const UTM_CLP = 71506; // Valor UTM
+const UTM_CLP = 71649; // Valor UTM julio 2026
 const DIARIO_OFICIAL_CLP = 15000; // Publicación Diario Oficial (incluida en tasa de ingreso)
 
 const PACKAGES = {
