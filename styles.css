@@ -291,6 +291,28 @@ input, select { font-family: inherit; }
   color: var(--ink-400);
   max-width: 160px;
 }
+.tweaks-seg {
+  display: inline-flex;
+  background: var(--ink-800);
+  border-radius: 8px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+.tweaks-seg button {
+  border: 0;
+  background: transparent;
+  color: var(--ink-300);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tweaks-seg button.active {
+  background: var(--purple-500);
+  color: white;
+}
 
 /* Markip logo (image component) */
 .markip-logo-img {
@@ -629,6 +651,61 @@ input, select { font-family: inherit; }
   min-height: 80px;
 }
 .marca-add:hover { border-color: var(--purple-400); color: var(--purple-700); background: var(--purple-50); }
+
+/* Editor de marcas independientes (modo multimarca) */
+.brands-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.brand-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--ink-200);
+  border-radius: 12px;
+  background: var(--ink-50);
+}
+.brand-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.brand-row-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--purple-700);
+}
+.brand-row-remove {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.6;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.brand-row-remove:hover { opacity: 1; background: var(--ink-100); }
+.brand-row-foot {
+  font-size: 12px;
+  color: var(--ink-500);
+}
+.brand-add {
+  background: white;
+  border: 1px dashed var(--ink-300);
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--ink-600);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.brand-add:hover { border-color: var(--purple-400); color: var(--purple-700); background: var(--purple-50); }
 .class-placeholder {
   color: var(--ink-400);
   font-size: 13px;

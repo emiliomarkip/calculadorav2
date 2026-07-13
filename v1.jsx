@@ -1,7 +1,7 @@
 // Variation 1: "Protagonista" — El primer pago es enorme y central.
 
 const V1 = ({ state, showChart, mode = 'actual' }) => {
-  const { pkg, classes, marcas = [], honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, descuentoPct, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, diarioOficial, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '' } = state;
+  const { pkg, classes, marcas = [], honorariosBase, honorariosBruto, honorariosClasesExtra, honorariosClaseAdicional, descuento, descuentoPct, honorariosSubtotal, tasaInicioTotal, tasaFinalTotal, primerPago, segundoPago, total, utm, diarioOficial, tasaInicioPorClase, tasaFinalPorClase, selectedClassesData = [], description = '', multimarca = false, brandNames = [] } = state;
   const { formatCLP } = window.MarkipCalc;
   const MarkipLogo = window.MarkipLogo || null;
   const isFormal = mode === 'formal';
@@ -9,7 +9,20 @@ const V1 = ({ state, showChart, mode = 'actual' }) => {
 
   const classNumbers = selectedClassesData.map(c => c.id).join(', ');
   const isBasico = pkg.id === 'basico';
-  const isMultiMarca = marcas.length > 1;
+  // Cotización multimarca: varias marcas independientes, cada una con nombre propio.
+  const isMultiBrand = multimarca && marcas.some(m => m.brandName != null);
+  const isMultiMarca = !isMultiBrand && marcas.length > 1;
+
+  // Agrupa las presentaciones por marca (consecutivas) para el desglose multimarca.
+  const brandGroups = [];
+  if (isMultiBrand) {
+    marcas.forEach((m, i) => {
+      const name = m.brandName || `Marca ${brandGroups.length + 1}`;
+      const last = brandGroups[brandGroups.length - 1];
+      if (last && last.rawName === (m.brandName || '')) last.items.push(m);
+      else brandGroups.push({ name, rawName: m.brandName || '', items: [m] });
+    });
+  }
 
   const classNameFor = (id) => {
     const c = selectedClassesData.find(x => x.id === id);
@@ -69,22 +82,41 @@ const V1 = ({ state, showChart, mode = 'actual' }) => {
           </div>
 
           <div className="v1-hero-meta">
-            {state.brand ? (
-              <div className="v1-meta-row"><span>Marca</span><strong>{state.brand}</strong></div>
-            ) : null}
-            {state.clientName ? (
-              <div className="v1-meta-row"><span>Cliente</span><strong>{state.clientName}</strong></div>
-            ) : null}
-            {selectedClassesData.length > 0 ? (
-              <div className="v1-meta-row">
-                <span>Clase{selectedClassesData.length > 1 ? 's' : ''}</span>
-                <strong>{classNumbers}</strong>
-              </div>
+            {isMultiBrand ? (
+              <>
+                {state.clientName ? (
+                  <div className="v1-meta-row"><span>Cliente</span><strong>{state.clientName}</strong></div>
+                ) : null}
+                <div className="v1-meta-row"><span>Marca{brandNames.length > 1 ? 's' : ''}</span><strong>{brandNames.length}</strong></div>
+                {brandNames.length > 0 && (
+                  <div className="v1-meta-row v1-meta-desc">
+                    <span>Detalle</span>
+                    <strong className="v1-meta-desc-text">{brandNames.join(' · ')}</strong>
+                  </div>
+                )}
+                <div className="v1-meta-row"><span>Presentaciones</span><strong>{marcas.length}</strong></div>
+                <div className="v1-meta-row"><span>Clases (total)</span><strong>{classes}</strong></div>
+              </>
             ) : (
-              <div className="v1-meta-row"><span>Clases</span><strong style={{opacity:.6}}>Sin seleccionar</strong></div>
-            )}
-            {isMultiMarca && (
-              <div className="v1-meta-row"><span>Marcas a presentar</span><strong>{marcas.length}</strong></div>
+              <>
+                {state.brand ? (
+                  <div className="v1-meta-row"><span>Marca</span><strong>{state.brand}</strong></div>
+                ) : null}
+                {state.clientName ? (
+                  <div className="v1-meta-row"><span>Cliente</span><strong>{state.clientName}</strong></div>
+                ) : null}
+                {selectedClassesData.length > 0 ? (
+                  <div className="v1-meta-row">
+                    <span>Clase{selectedClassesData.length > 1 ? 's' : ''}</span>
+                    <strong>{classNumbers}</strong>
+                  </div>
+                ) : (
+                  <div className="v1-meta-row"><span>Clases</span><strong style={{opacity:.6}}>Sin seleccionar</strong></div>
+                )}
+                {isMultiMarca && (
+                  <div className="v1-meta-row"><span>Marcas a presentar</span><strong>{marcas.length}</strong></div>
+                )}
+              </>
             )}
             {description ? (
               <div className="v1-meta-row v1-meta-desc">
@@ -126,7 +158,62 @@ const V1 = ({ state, showChart, mode = 'actual' }) => {
           <div className="v1-card">
             <div className="v1-card-title">Desglose del primer pago</div>
 
-            {isMultiMarca ? (
+            {isMultiBrand ? (
+              <>
+                {brandGroups.map((bg, bi) => {
+                  const brandClasses = bg.items.reduce((s, m) => s + m.classes, 0);
+                  return (
+                    <div key={bi} className="v1-brand-block">
+                      <div className="v1-brand-head">
+                        <span className="v1-brand-name">{bg.name}</span>
+                        <span className="v1-brand-meta">
+                          {brandClasses} clase{brandClasses > 1 ? 's' : ''} · {bg.items.length} present.
+                        </span>
+                      </div>
+                      {bg.items.map((m, i) => (
+                        <div key={i} className="v1-marca-block">
+                          <div className="v1-marca-head">
+                            <span className="v1-marca-name">
+                              {m.presCount > 1 ? `Presentación ${m.presIndex + 1} de ${m.presCount}` : 'Presentación única'}
+                            </span>
+                            <span className="v1-marca-classes">
+                              {m.classIds.map(id => <span key={id} className="v1-marca-tag">{id}</span>)}
+                            </span>
+                          </div>
+                          <div className="v1-line">
+                            <div>
+                              <div className="v1-line-label">Honorarios</div>
+                              <div className="v1-line-sub">
+                                {m.classes > 1
+                                  ? `${formatCLP(m.honorariosBase)} base + ${m.classes - 1} × ${formatCLP(honorariosClaseAdicional)}`
+                                  : 'Base por 1 clase'}
+                              </div>
+                            </div>
+                            <div className="v1-line-val">{formatCLP(m.honorariosBruto)}</div>
+                          </div>
+                          <div className="v1-line">
+                            <div>
+                              <div className="v1-line-label">Tasa de ingreso INAPI</div>
+                              <div className="v1-line-sub">{m.classes} × (1 UTM + {formatCLP(diarioOficial || 15000)})</div>
+                            </div>
+                            <div className="v1-line-val">{formatCLP(m.tasaInicioTotal)}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+                {descuento > 0 && (
+                  <div className="v1-line v1-line-discount">
+                    <div>
+                      <div className="v1-line-label">Descuento ({descuentoPct}%)</div>
+                      <div className="v1-line-sub">Sobre honorarios totales</div>
+                    </div>
+                    <div className="v1-line-val">−{formatCLP(descuento)}</div>
+                  </div>
+                )}
+              </>
+            ) : isMultiMarca ? (
               <>
                 {marcas.map((m, i) => (
                   <div key={i} className="v1-marca-block">
@@ -503,6 +590,21 @@ const v1Styles = `
 }
 .v1-total-val { font-family: var(--font-display); font-size: 28px; font-weight: 400; color: var(--purple-700); letter-spacing: -0.02em; }
 
+.v1-brand-block { margin-bottom: 16px; }
+.v1-brand-block:last-of-type { margin-bottom: 0; }
+.v1-brand-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 8px; margin-bottom: 8px; padding-bottom: 6px;
+  border-bottom: 2px solid var(--purple-200);
+}
+.v1-brand-name {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 400;
+  color: var(--purple-800); letter-spacing: -0.01em;
+}
+.v1-brand-meta { font-size: 11px; color: var(--ink-500); white-space: nowrap; }
+.v1-formal .v1-brand-head { border-bottom-color: var(--ink-300); }
+.v1-formal .v1-brand-name { color: var(--ink-900); }
 .v1-marca-block {
   border: 1px solid var(--ink-200);
   border-radius: 12px;
