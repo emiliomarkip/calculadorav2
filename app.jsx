@@ -230,6 +230,8 @@ function DisplayModePicker({ mode, setMode }) {
   );
 }
 
+// Constructor de presentaciones para UNA marca (modo normal). Cada bucket es un
+// objeto { id, name, classes } y puede nombrarse para identificarlo.
 function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, maxPerMarca, pkg }) {
   if (pkg !== 'pro' || selectedClasses.length < 2) return null;
 
@@ -238,27 +240,28 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
     return c ? c.name : '';
   };
 
+  // Copia superficial de los buckets con sus clases, para no mutar el estado.
+  const cloneGroups = () => groups.map(m => ({ ...m, classes: [...m.classes] }));
+
   const moveClass = (classId, fromIdx, toIdx) => {
     const target = groups[toIdx];
-    if (!target) return;
-    if (target.length >= maxPerMarca) return;
-    const next = groups.map((g, i) => {
-      if (i === fromIdx) return g.filter(x => x !== classId);
-      if (i === toIdx) return [...g, classId].sort((a, b) => a - b);
-      return g;
-    }).filter(g => g.length > 0);
+    if (!target || target.classes.length >= maxPerMarca) return;
+    const next = groups.map((m, i) => {
+      if (i === fromIdx) return { ...m, classes: m.classes.filter(x => x !== classId) };
+      if (i === toIdx) return { ...m, classes: [...m.classes, classId].sort((a, b) => a - b) };
+      return m;
+    }).filter(m => m.classes.length > 0);
     setGroups(next);
   };
 
   const moveToNext = (classId, fromIdx) => {
     let target = fromIdx + 1;
-    while (target < groups.length && groups[target].length >= maxPerMarca) target++;
+    while (target < groups.length && groups[target].classes.length >= maxPerMarca) target++;
     if (target >= groups.length) {
-      // crear nueva marca
       const next = groups
-        .map((g, i) => i === fromIdx ? g.filter(x => x !== classId) : g)
-        .filter(g => g.length > 0);
-      next.push([classId]);
+        .map((m, i) => i === fromIdx ? { ...m, classes: m.classes.filter(x => x !== classId) } : m)
+        .filter(m => m.classes.length > 0);
+      next.push({ id: newBrandId(), name: '', classes: [classId] });
       setGroups(next);
     } else {
       moveClass(classId, fromIdx, target);
@@ -271,23 +274,24 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
 
   const makePriority = (idx) => {
     if (idx === 0) return;
-    const next = [groups[idx], ...groups.filter((_, i) => i !== idx)];
-    setGroups(next);
+    setGroups([groups[idx], ...groups.filter((_, i) => i !== idx)]);
   };
 
-  const addEmptyMarca = () => setGroups([...groups, []]);
+  const setName = (idx, name) => setGroups(groups.map((m, i) => i === idx ? { ...m, name } : m));
+
+  const addEmptyMarca = () => setGroups([...groups, { id: newBrandId(), name: '', classes: [] }]);
 
   const removeMarca = (idx) => {
     if (groups.length <= 1) return;
-    const removed = groups[idx];
-    let next = groups.filter((_, i) => i !== idx);
+    const removed = groups[idx].classes;
+    let next = cloneGroups().filter((_, i) => i !== idx);
     // redistribuye las clases huérfanas en los buckets restantes con espacio
     for (const id of removed) {
       let placed = false;
-      for (const g of next) {
-        if (g.length < maxPerMarca) { g.push(id); g.sort((a, b) => a - b); placed = true; break; }
+      for (const m of next) {
+        if (m.classes.length < maxPerMarca) { m.classes = [...m.classes, id].sort((a, b) => a - b); placed = true; break; }
       }
-      if (!placed) next.push([id]);
+      if (!placed) next.push({ id: newBrandId(), name: '', classes: [id] });
     }
     setGroups(next);
   };
@@ -296,11 +300,11 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
     <div className="control control-full">
       <label className="control-label">
         Marcas a presentar
-        <span className="control-hint"> · máx {maxPerMarca} clase{maxPerMarca > 1 ? 's' : ''} por marca · la primera es prioritaria</span>
+        <span className="control-hint"> · máx {maxPerMarca} clase{maxPerMarca > 1 ? 's' : ''} por marca · la primera es prioritaria · puedes nombrarlas</span>
       </label>
       <div className="marca-builder">
-        {groups.map((g, idx) => (
-          <div key={idx} className={'marca-bucket' + (idx === 0 ? ' marca-bucket-priority' : '')}>
+        {groups.map((m, idx) => (
+          <div key={m.id} className={'marca-bucket' + (idx === 0 ? ' marca-bucket-priority' : '')}>
             <div className="marca-bucket-head">
               <span className="marca-bucket-title">
                 Marca {idx + 1}
@@ -319,9 +323,15 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
                 )}
               </div>
             </div>
+            <input
+              className="marca-bucket-name"
+              value={m.name || ''}
+              onChange={e => setName(idx, e.target.value)}
+              placeholder="Nombre para identificar (opcional)"
+            />
             <div className="marca-bucket-body">
-              {g.length === 0 && <span className="marca-empty">Vacía · mueve clases aquí</span>}
-              {g.map(id => (
+              {m.classes.length === 0 && <span className="marca-empty">Vacía · mueve clases aquí</span>}
+              {m.classes.map(id => (
                 <span key={id} className="marca-chip" title={classLabel(id)}>
                   <span className="marca-chip-num">{id}</span>
                   <span className="marca-chip-name">{classLabel(id)}</span>
@@ -345,7 +355,7 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
               ))}
             </div>
             <div className="marca-bucket-foot">
-              {g.length} / {maxPerMarca} clases
+              {m.classes.length} / {maxPerMarca} clases
             </div>
           </div>
         ))}
@@ -359,6 +369,15 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
 
 function newBrandId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Normaliza marcaGroups: soporta el formato antiguo (arreglo de arreglos de ids)
+// y el nuevo ({ id, name, classes }). Devuelve siempre el formato nuevo.
+function normalizeMarcaGroups(mg) {
+  if (!Array.isArray(mg) || mg.length === 0) return [{ id: newBrandId(), name: '', classes: [] }];
+  return mg.map(g => Array.isArray(g)
+    ? { id: newBrandId(), name: '', classes: g }
+    : { id: g.id || newBrandId(), name: g.name || '', classes: g.classes || [] });
 }
 
 // Editor de varias marcas independientes (modo multimarca). Cada marca tiene su
@@ -385,7 +404,7 @@ function BrandsEditor({ brands, setBrands, maxPerMarca }) {
           return (
             <div className="brand-row" key={b.id}>
               <div className="brand-row-head">
-                <span className="brand-row-title">Marca {idx + 1}</span>
+                <span className="brand-row-title">{b.name ? b.name : `Marca ${idx + 1}`}</span>
                 {brands.length > 1 && (
                   <button type="button" className="brand-row-remove" onClick={() => removeBrand(b.id)} title="Eliminar marca">🗑</button>
                 )}
@@ -614,7 +633,7 @@ function App() {
   const [clientName, setClientName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [discount, setDiscount] = React.useState(0);
-  const [marcaGroups, setMarcaGroups] = React.useState([[35]]);
+  const [marcaGroups, setMarcaGroups] = React.useState([{ id: 'm1', name: '', classes: [35] }]);
   const [brands, setBrands] = React.useState([{ id: 'b1', name: '', classes: [35] }]);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
@@ -663,33 +682,36 @@ function App() {
   // Las clases ya no seleccionadas se eliminan. Marcas con sobrecupo se rebalancean.
   React.useEffect(() => {
     const selected = new Set(selectedClasses);
-    let next = marcaGroups.map(g => g.filter(id => selected.has(id)));
+    // Copia superficial preservando id/name de cada marca.
+    let next = marcaGroups.map(m => ({ ...m, classes: m.classes.filter(id => selected.has(id)) }));
     // Overflow por cambio de maxPerMarca (ej: pro→básico)
     const overflow = [];
-    next = next.map(g => {
-      if (g.length > maxPerMarca) {
-        overflow.push(...g.slice(maxPerMarca));
-        return g.slice(0, maxPerMarca);
+    next = next.map(m => {
+      if (m.classes.length > maxPerMarca) {
+        overflow.push(...m.classes.slice(maxPerMarca));
+        return { ...m, classes: m.classes.slice(0, maxPerMarca) };
       }
-      return g;
+      return m;
     });
-    const present = new Set(next.flat());
+    const present = new Set(next.flatMap(m => m.classes));
     const missing = selectedClasses.filter(id => !present.has(id));
     const toPlace = [...missing, ...overflow];
     for (const id of toPlace) {
       let placed = false;
-      for (const g of next) {
-        if (g.length < maxPerMarca) { g.push(id); g.sort((a, b) => a - b); placed = true; break; }
+      for (const m of next) {
+        if (m.classes.length < maxPerMarca) { m.classes = [...m.classes, id].sort((a, b) => a - b); placed = true; break; }
       }
-      if (!placed) next.push([id]);
+      if (!placed) next.push({ id: newBrandId(), name: '', classes: [id] });
     }
-    if (next.length === 0) next = [[]];
+    if (next.length === 0) next = [{ id: newBrandId(), name: '', classes: [] }];
     if (JSON.stringify(next) !== JSON.stringify(marcaGroups)) {
       setMarcaGroups(next);
     }
   }, [selectedClasses, maxPerMarca]);
 
-  const groupsForCalc = marcaGroups.filter(g => g.length > 0);
+  const nonEmptyMarcas = marcaGroups.filter(m => m.classes.length > 0);
+  const groupsForCalc = nonEmptyMarcas.map(m => m.classes);
+  const normalMeta = nonEmptyMarcas.map(m => ({ brandName: m.name || '', presIndex: 0, presCount: 1 }));
 
   // En multimarca, arma los grupos (presentaciones) a partir de cada marca independiente.
   const multiBuild = React.useMemo(() => {
@@ -716,6 +738,7 @@ function App() {
         packageId: pkg,
         classes: selectedClasses.length,
         groups: groupsForCalc.length > 0 ? groupsForCalc : null,
+        groupMeta: groupsForCalc.length > 0 ? normalMeta : null,
         discountPct: discount,
       });
     },
@@ -779,7 +802,7 @@ function App() {
     setTweaks(t => ({ ...t, multimarca: !!it.multimarca }));
     seededMulti.current = !!it.multimarca; // no re-sembrar al cargar una cotización multimarca
     setSelectedClasses(it.classes || []);
-    if (it.marcaGroups) setMarcaGroups(it.marcaGroups);
+    if (it.marcaGroups) setMarcaGroups(normalizeMarcaGroups(it.marcaGroups));
     if (it.brands) setBrands(it.brands);
     setBrand(it.brand || '');
     setClientName(it.clientName || '');

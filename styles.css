@@ -571,6 +571,21 @@ input, select { font-family: inherit; }
   letter-spacing: 0.04em;
   text-transform: lowercase;
 }
+.marca-bucket-name {
+  width: 100%;
+  border: 1px solid var(--ink-200);
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--ink-800);
+  background: var(--ink-50);
+}
+.marca-bucket-name:focus {
+  outline: none;
+  border-color: var(--purple-400);
+  background: white;
+}
 .marca-bucket-actions { display: flex; gap: 4px; }
 .marca-action {
   background: transparent;

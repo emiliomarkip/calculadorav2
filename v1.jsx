@@ -218,7 +218,7 @@ const V1 = ({ state, showChart, mode = 'actual' }) => {
                 {marcas.map((m, i) => (
                   <div key={i} className="v1-marca-block">
                     <div className="v1-marca-head">
-                      <span className="v1-marca-name">Marca {i + 1} {i === 0 ? '· prioritaria' : ''}</span>
+                      <span className="v1-marca-name">{m.brandName ? m.brandName : `Marca ${i + 1}`}{i === 0 ? ' · prioritaria' : ''}</span>
                       <span className="v1-marca-classes">
                         {m.classIds.map(id => <span key={id} className="v1-marca-tag">{id}</span>)}
                       </span>
