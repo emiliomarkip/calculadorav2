@@ -3,6 +3,7 @@
 const TWEAK_DEFAULTS = {
   colorScheme: "purple",
   showChart: true,
+  multimarca: false,
 };
 
 const COLOR_SCHEMES = {
@@ -229,8 +230,11 @@ function DisplayModePicker({ mode, setMode }) {
   );
 }
 
-function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, maxPerMarca, pkg }) {
-  if (pkg !== 'pro' || selectedClasses.length < 2) return null;
+function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, maxPerMarca, pkg, multimarca }) {
+  // En modo multimarca el constructor está disponible en cualquier plan.
+  // En modo normal solo aplica al plan Pro (que permite hasta 2 clases por marca).
+  const available = multimarca ? selectedClasses.length >= 2 : (pkg === 'pro' && selectedClasses.length >= 2);
+  if (!available) return null;
 
   const classLabel = (id) => {
     const c = ALL_CLASSES.find(x => x.id === id);
@@ -295,7 +299,9 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
     <div className="control control-full">
       <label className="control-label">
         Marcas a presentar
-        <span className="control-hint"> · máx {maxPerMarca} clase{maxPerMarca > 1 ? 's' : ''} por marca · la primera es prioritaria</span>
+        {multimarca
+          ? <span className="control-hint"> · multimarca · sin límite de clases por marca · la primera es prioritaria</span>
+          : <span className="control-hint"> · máx {maxPerMarca} clase{maxPerMarca > 1 ? 's' : ''} por marca · la primera es prioritaria</span>}
       </label>
       <div className="marca-builder">
         {groups.map((g, idx) => (
@@ -344,7 +350,7 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
               ))}
             </div>
             <div className="marca-bucket-foot">
-              {g.length} / {maxPerMarca} clases
+              {multimarca ? `${g.length} clase${g.length === 1 ? '' : 's'}` : `${g.length} / ${maxPerMarca} clases`}
             </div>
           </div>
         ))}
@@ -356,7 +362,7 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
   );
 }
 
-function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca }) {
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca, multimarca }) {
   const onDiscountChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
     let n = raw === '' ? 0 : parseInt(raw, 10);
@@ -364,7 +370,8 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMod
     setDiscount(n);
   };
   const pkgDef = PKGS[pkg];
-  const classMax = pkg === 'basico' ? 1 : null;
+  // En multimarca se levanta el tope de 1 clase del plan Básico para poder repartir clases entre marcas.
+  const classMax = (pkg === 'basico' && !multimarca) ? 1 : null;
   return (
     <>
       <div className="control">
@@ -396,7 +403,7 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMod
       <div className="control control-classes">
         <label className="control-label">
           Clase{selectedClasses.length !== 1 ? 's' : ''}
-          {pkg === 'basico' && <span className="control-hint"> · máx 1</span>}
+          {pkg === 'basico' && !multimarca && <span className="control-hint"> · máx 1</span>}
         </label>
         <ClassSelector
           selectedIds={selectedClasses}
@@ -411,6 +418,7 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMod
         setSelectedClasses={setSelectedClasses}
         maxPerMarca={maxPerMarca}
         pkg={pkg}
+        multimarca={multimarca}
       />
       <div className="control">
         <label className="control-label">Descuento (%)</label>
@@ -462,6 +470,17 @@ function Tweaks({ tweaks, setTweak }) {
           className={'switch' + (tweaks.showChart ? ' on' : '')}
           onClick={() => setTweak('showChart', !tweaks.showChart)}
           aria-label="Mostrar gráfico"
+        />
+      </div>
+      <div className="tweaks-row tweaks-row-stacked">
+        <div className="tweaks-label">
+          <span>Multimarca</span>
+          <span className="tweaks-hint">Permite armar varias marcas (X, Y, …) sin el límite de clases por marca.</span>
+        </div>
+        <button
+          className={'switch' + (tweaks.multimarca ? ' on' : '')}
+          onClick={() => setTweak('multimarca', !tweaks.multimarca)}
+          aria-label="Multimarca"
         />
       </div>
     </>
@@ -537,12 +556,14 @@ function App() {
   const [history, setHistory] = React.useState(() => loadHistory());
   const [savedFlash, setSavedFlash] = React.useState(false);
 
-  // Si paso a básico y hay más de 1 clase, recorto.
+  const multimarca = tweaks.multimarca;
+
+  // Si paso a básico y hay más de 1 clase, recorto (salvo en multimarca, que permite repartir clases).
   React.useEffect(() => {
-    if (pkg === 'basico' && selectedClasses.length > 1) {
+    if (pkg === 'basico' && !multimarca && selectedClasses.length > 1) {
       setSelectedClasses(selectedClasses.slice(0, 1));
     }
-  }, [pkg]);
+  }, [pkg, multimarca]);
 
   // Color scheme: ámbar si básico, purple si pro (a menos que el usuario lo cambie manualmente)
   const [userOverrodeColor, setUserOverrodeColor] = React.useState(false);
@@ -551,7 +572,8 @@ function App() {
     setTweaks(t => ({ ...t, colorScheme: pkg === 'basico' ? 'amber' : 'purple' }));
   }, [pkg, userOverrodeColor]);
 
-  const maxPerMarca = PKGS[pkg].maxClassesPerMarca || 99;
+  // En multimarca no se aplica el tope de clases por marca; el usuario arma las marcas libremente.
+  const maxPerMarca = multimarca ? 999 : (PKGS[pkg].maxClassesPerMarca || 99);
 
   // Sincroniza marcaGroups con selectedClasses + maxPerMarca.
   // Las clases nuevas se añaden a la primera marca con espacio (o se crea una nueva).
@@ -625,6 +647,7 @@ function App() {
       createdAt: new Date().toISOString(),
       pkg,
       displayMode,
+      multimarca,
       classes: selectedClasses,
       marcaGroups,
       brand,
@@ -645,6 +668,7 @@ function App() {
   const loadQuote = (it) => {
     setPkg(it.pkg);
     setDisplayMode(it.displayMode || 'actual');
+    setTweaks(t => ({ ...t, multimarca: !!it.multimarca }));
     setSelectedClasses(it.classes || []);
     if (it.marcaGroups) setMarcaGroups(it.marcaGroups);
     setBrand(it.brand || '');
@@ -699,6 +723,7 @@ function App() {
           discount={discount} setDiscount={setDiscount}
           groups={marcaGroups} setGroups={setMarcaGroups}
           maxPerMarca={maxPerMarca}
+          multimarca={multimarca}
         />,
         controlsEl
       )}
