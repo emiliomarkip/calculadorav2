@@ -3,6 +3,7 @@
 const TWEAK_DEFAULTS = {
   colorScheme: "purple",
   showChart: true,
+  multimarca: false,
 };
 
 const COLOR_SCHEMES = {
@@ -356,7 +357,66 @@ function MarcaBuilder({ selectedClasses, groups, setGroups, setSelectedClasses, 
   );
 }
 
-function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca }) {
+function newBrandId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Editor de varias marcas independientes (modo multimarca). Cada marca tiene su
+// nombre + clases y se divide automáticamente en presentaciones de máx `maxPerMarca`.
+function BrandsEditor({ brands, setBrands, maxPerMarca }) {
+  const { buildMultiMarcaGroups } = window.MarkipCalc;
+
+  const updateBrand = (id, patch) =>
+    setBrands(brands.map(b => (b.id === id ? { ...b, ...patch } : b)));
+  const addBrand = () =>
+    setBrands([...brands, { id: newBrandId(), name: '', classes: [] }]);
+  const removeBrand = (id) =>
+    setBrands(brands.length > 1 ? brands.filter(b => b.id !== id) : brands);
+
+  return (
+    <div className="control control-full">
+      <label className="control-label">
+        Marcas a cotizar
+        <span className="control-hint"> · cada marca se divide automáticamente en presentaciones de máx {maxPerMarca} clase{maxPerMarca > 1 ? 's' : ''}</span>
+      </label>
+      <div className="brands-editor">
+        {brands.map((b, idx) => {
+          const presentations = buildMultiMarcaGroups([{ name: b.name, classes: b.classes }], maxPerMarca).groups;
+          return (
+            <div className="brand-row" key={b.id}>
+              <div className="brand-row-head">
+                <span className="brand-row-title">Marca {idx + 1}</span>
+                {brands.length > 1 && (
+                  <button type="button" className="brand-row-remove" onClick={() => removeBrand(b.id)} title="Eliminar marca">🗑</button>
+                )}
+              </div>
+              <input
+                className="control-input"
+                value={b.name}
+                onChange={e => updateBrand(b.id, { name: e.target.value })}
+                placeholder="Nombre de la marca (ej: Pepsi)"
+              />
+              <ClassSelector
+                selectedIds={b.classes}
+                onChange={(ids) => updateBrand(b.id, { classes: ids })}
+              />
+              <div className="brand-row-foot">
+                {b.classes.length === 0
+                  ? 'Sin clases seleccionadas'
+                  : `${b.classes.length} clase${b.classes.length > 1 ? 's' : ''} · ${presentations.length} ${presentations.length > 1 ? 'presentaciones' : 'presentación'}`}
+              </div>
+            </div>
+          );
+        })}
+        <button type="button" className="brand-add" onClick={addBrand}>
+          + Agregar marca
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca, multimarca, brands, setBrands }) {
   const onDiscountChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
     let n = raw === '' ? 0 : parseInt(raw, 10);
@@ -384,34 +444,40 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMod
           placeholder="Nombre"
         />
       </div>
-      <div className="control">
-        <label className="control-label">Marca</label>
-        <input
-          className="control-input"
-          value={brand}
-          onChange={e => setBrand(e.target.value)}
-          placeholder="Nombre de marca"
-        />
-      </div>
-      <div className="control control-classes">
-        <label className="control-label">
-          Clase{selectedClasses.length !== 1 ? 's' : ''}
-          {pkg === 'basico' && <span className="control-hint"> · máx 1</span>}
-        </label>
-        <ClassSelector
-          selectedIds={selectedClasses}
-          onChange={setSelectedClasses}
-          maxSelectable={classMax}
-        />
-      </div>
-      <MarcaBuilder
-        selectedClasses={selectedClasses}
-        groups={groups}
-        setGroups={setGroups}
-        setSelectedClasses={setSelectedClasses}
-        maxPerMarca={maxPerMarca}
-        pkg={pkg}
-      />
+      {multimarca ? (
+        <BrandsEditor brands={brands} setBrands={setBrands} maxPerMarca={maxPerMarca} />
+      ) : (
+        <>
+          <div className="control">
+            <label className="control-label">Marca</label>
+            <input
+              className="control-input"
+              value={brand}
+              onChange={e => setBrand(e.target.value)}
+              placeholder="Nombre de marca"
+            />
+          </div>
+          <div className="control control-classes">
+            <label className="control-label">
+              Clase{selectedClasses.length !== 1 ? 's' : ''}
+              {pkg === 'basico' && <span className="control-hint"> · máx 1</span>}
+            </label>
+            <ClassSelector
+              selectedIds={selectedClasses}
+              onChange={setSelectedClasses}
+              maxSelectable={classMax}
+            />
+          </div>
+          <MarcaBuilder
+            selectedClasses={selectedClasses}
+            groups={groups}
+            setGroups={setGroups}
+            setSelectedClasses={setSelectedClasses}
+            maxPerMarca={maxPerMarca}
+            pkg={pkg}
+          />
+        </>
+      )}
       <div className="control">
         <label className="control-label">Descuento (%)</label>
         <input
@@ -463,6 +529,24 @@ function Tweaks({ tweaks, setTweak }) {
           onClick={() => setTweak('showChart', !tweaks.showChart)}
           aria-label="Mostrar gráfico"
         />
+      </div>
+      <div className="tweaks-row tweaks-row-stacked">
+        <div className="tweaks-label">
+          <span>Tipo de cotización</span>
+          <span className="tweaks-hint">Multimarca: cotiza varias marcas independientes (Pepsi, Coca-Cola, …) en una sola cotización. Cada marca se divide sola en presentaciones.</span>
+        </div>
+        <div className="tweaks-seg">
+          <button
+            type="button"
+            className={!tweaks.multimarca ? 'active' : ''}
+            onClick={() => setTweak('multimarca', false)}
+          >Normal</button>
+          <button
+            type="button"
+            className={tweaks.multimarca ? 'active' : ''}
+            onClick={() => setTweak('multimarca', true)}
+          >Multimarca</button>
+        </div>
       </div>
     </>
   );
@@ -531,18 +615,21 @@ function App() {
   const [description, setDescription] = React.useState('');
   const [discount, setDiscount] = React.useState(0);
   const [marcaGroups, setMarcaGroups] = React.useState([[35]]);
+  const [brands, setBrands] = React.useState([{ id: 'b1', name: '', classes: [35] }]);
   const [tweaks, setTweaks] = React.useState(TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
   const [historyOpen, setHistoryOpen] = React.useState(false);
   const [history, setHistory] = React.useState(() => loadHistory());
   const [savedFlash, setSavedFlash] = React.useState(false);
 
-  // Si paso a básico y hay más de 1 clase, recorto.
+  const multimarca = tweaks.multimarca;
+
+  // Si paso a básico y hay más de 1 clase, recorto (salvo en multimarca, que permite repartir clases).
   React.useEffect(() => {
-    if (pkg === 'basico' && selectedClasses.length > 1) {
+    if (pkg === 'basico' && !multimarca && selectedClasses.length > 1) {
       setSelectedClasses(selectedClasses.slice(0, 1));
     }
-  }, [pkg]);
+  }, [pkg, multimarca]);
 
   // Color scheme: ámbar si básico, purple si pro (a menos que el usuario lo cambie manualmente)
   const [userOverrodeColor, setUserOverrodeColor] = React.useState(false);
@@ -551,7 +638,25 @@ function App() {
     setTweaks(t => ({ ...t, colorScheme: pkg === 'basico' ? 'amber' : 'purple' }));
   }, [pkg, userOverrodeColor]);
 
+  // Tope de clases por presentación según el plan (Pro: 2, Básico: 1). Cada marca se
+  // divide automáticamente en presentaciones respetando este máximo, en ambos modos.
   const maxPerMarca = PKGS[pkg].maxClassesPerMarca || 99;
+
+  // Al entrar por primera vez a multimarca con una lista vacía, siembra la primera
+  // marca con lo que el usuario ya tenía en modo normal (nombre + clases).
+  const seededMulti = React.useRef(false);
+  React.useEffect(() => {
+    if (!multimarca) { seededMulti.current = false; return; }
+    if (seededMulti.current) return;
+    seededMulti.current = true;
+    setBrands(bs => {
+      const untouched = bs.length === 1 && !bs[0].name && bs[0].classes.length <= 1;
+      if (untouched && (brand || selectedClasses.length > 0)) {
+        return [{ id: bs[0].id, name: brand, classes: [...selectedClasses] }];
+      }
+      return bs;
+    });
+  }, [multimarca]);
 
   // Sincroniza marcaGroups con selectedClasses + maxPerMarca.
   // Las clases nuevas se añaden a la primera marca con espacio (o se crea una nueva).
@@ -586,17 +691,41 @@ function App() {
 
   const groupsForCalc = marcaGroups.filter(g => g.length > 0);
 
+  // En multimarca, arma los grupos (presentaciones) a partir de cada marca independiente.
+  const multiBuild = React.useMemo(() => {
+    if (!multimarca) return null;
+    const active = brands
+      .map(b => ({ name: b.name, classes: b.classes }))
+      .filter(b => b.classes.length > 0);
+    return window.MarkipCalc.buildMultiMarcaGroups(active, maxPerMarca);
+  }, [multimarca, brands, maxPerMarca]);
+
   const state = React.useMemo(
-    () => window.MarkipCalc.calcFees({
-      packageId: pkg,
-      classes: selectedClasses.length,
-      groups: groupsForCalc.length > 0 ? groupsForCalc : null,
-      discountPct: discount,
-    }),
-    [pkg, selectedClasses, marcaGroups, discount]
+    () => {
+      if (multimarca) {
+        const groups = multiBuild ? multiBuild.groups : [];
+        return window.MarkipCalc.calcFees({
+          packageId: pkg,
+          classes: groups.reduce((s, g) => s + g.length, 0),
+          groups: groups.length > 0 ? groups : null,
+          groupMeta: multiBuild ? multiBuild.meta : null,
+          discountPct: discount,
+        });
+      }
+      return window.MarkipCalc.calcFees({
+        packageId: pkg,
+        classes: selectedClasses.length,
+        groups: groupsForCalc.length > 0 ? groupsForCalc : null,
+        discountPct: discount,
+      });
+    },
+    [multimarca, multiBuild, pkg, selectedClasses, marcaGroups, discount]
   );
 
   const selectedClassesData = ALL_CLASSES.filter(c => selectedClasses.includes(c.id));
+  const activeBrandNames = multimarca
+    ? brands.filter(b => b.classes.length > 0).map((b, i) => b.name || `Marca ${i + 1}`)
+    : [];
 
   React.useEffect(() => { applyColorScheme(tweaks.colorScheme); }, [tweaks.colorScheme]);
 
@@ -625,8 +754,10 @@ function App() {
       createdAt: new Date().toISOString(),
       pkg,
       displayMode,
+      multimarca,
       classes: selectedClasses,
       marcaGroups,
+      brands,
       brand,
       clientName,
       description,
@@ -645,8 +776,11 @@ function App() {
   const loadQuote = (it) => {
     setPkg(it.pkg);
     setDisplayMode(it.displayMode || 'actual');
+    setTweaks(t => ({ ...t, multimarca: !!it.multimarca }));
+    seededMulti.current = !!it.multimarca; // no re-sembrar al cargar una cotización multimarca
     setSelectedClasses(it.classes || []);
     if (it.marcaGroups) setMarcaGroups(it.marcaGroups);
+    if (it.brands) setBrands(it.brands);
     setBrand(it.brand || '');
     setClientName(it.clientName || '');
     setDescription(it.description || '');
@@ -669,7 +803,7 @@ function App() {
     const el = document.getElementById(id + '-stage');
     return el ? ReactDOM.createPortal(
       <StageComp
-        state={{ ...state, brand, clientName, selectedClassesData, description }}
+        state={{ ...state, brand, clientName, selectedClassesData, description, multimarca, brandNames: activeBrandNames }}
         showChart={tweaks.showChart}
         mode={displayMode}
       />,
@@ -699,6 +833,8 @@ function App() {
           discount={discount} setDiscount={setDiscount}
           groups={marcaGroups} setGroups={setMarcaGroups}
           maxPerMarca={maxPerMarca}
+          multimarca={multimarca}
+          brands={brands} setBrands={setBrands}
         />,
         controlsEl
       )}

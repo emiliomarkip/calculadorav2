@@ -72,13 +72,20 @@ function calcMarcaFees(packageId, classes) {
   };
 }
 
-// groups = array de arrays de class ids. Cada grupo = una marca.
+// groups = array de arrays de class ids. Cada grupo = una "presentación" (una solicitud INAPI).
+// groupMeta = array paralelo con { brandName, presIndex, presCount } para cotizaciones multimarca.
 // Si groups es null/empty, se asume un solo grupo con `classes`.
-function calcFees({ packageId, classes, groups = null, discountPct = 0 }) {
+function calcFees({ packageId, classes, groups = null, groupMeta = null, discountPct = 0 }) {
   const pkg = PACKAGES[packageId];
   let marcaGroups;
+  let metaGroups = null;
   if (groups && groups.length > 0) {
-    marcaGroups = groups.filter(g => g && g.length > 0);
+    // Filtra grupos vacíos manteniendo alineada la metadata de marca.
+    const pairs = groups
+      .map((g, i) => ({ g, m: groupMeta ? groupMeta[i] : null }))
+      .filter(p => p.g && p.g.length > 0);
+    marcaGroups = pairs.map(p => p.g);
+    metaGroups = groupMeta ? pairs.map(p => p.m) : null;
   } else {
     // single marca con N clases (puede ser 0 = sólo honorarios base)
     marcaGroups = [Array.from({ length: classes }, (_, i) => i + 1)];
@@ -86,7 +93,15 @@ function calcFees({ packageId, classes, groups = null, discountPct = 0 }) {
 
   const marcas = marcaGroups.map((classIds, idx) => {
     const fees = calcMarcaFees(packageId, classIds.length);
-    return { idx, classIds, ...fees };
+    const meta = metaGroups ? metaGroups[idx] : null;
+    return {
+      idx,
+      classIds,
+      ...fees,
+      brandName: meta ? meta.brandName : null,
+      presIndex: meta ? meta.presIndex : null,
+      presCount: meta ? meta.presCount : null,
+    };
   });
 
   const honorariosBruto = marcas.reduce((s, m) => s + m.honorariosBruto, 0);
@@ -151,6 +166,35 @@ function autoSplitClasses(classIds, maxPerMarca, priorityId = null) {
   return groups;
 }
 
+// Divide una lista de clases en presentaciones de tamaño máximo `maxPerMarca`,
+// en orden (ej: 3 clases con máx 2 => [[a,b],[c]]).
+function splitIntoPresentations(classIds, maxPerMarca) {
+  const ids = (classIds || []).slice();
+  if (ids.length === 0) return [];
+  if (!maxPerMarca || maxPerMarca >= ids.length) return [ids];
+  const groups = [];
+  for (let i = 0; i < ids.length; i += maxPerMarca) {
+    groups.push(ids.slice(i, i + maxPerMarca));
+  }
+  return groups;
+}
+
+// brands = [{ name, classes: [ids] }]. Cada marca se auto-divide en presentaciones
+// de máx `maxPerMarca` clases. Devuelve grupos aplanados + metadata paralela para calcFees.
+function buildMultiMarcaGroups(brands, maxPerMarca) {
+  const groups = [];
+  const meta = [];
+  (brands || []).forEach(b => {
+    const cls = (b.classes || []).slice().sort((a, c) => a - c);
+    const presentations = splitIntoPresentations(cls, maxPerMarca);
+    presentations.forEach((p, i) => {
+      groups.push(p);
+      meta.push({ brandName: b.name || '', presIndex: i, presCount: presentations.length });
+    });
+  });
+  return { groups, meta };
+}
+
 const TRADEMARK_CLASSES = [
   { id: 1,  name: 'Productos químicos' },
   { id: 2,  name: 'Pinturas, barnices, lacas' },
@@ -199,4 +243,4 @@ const TRADEMARK_CLASSES = [
   { id: 45, name: 'Servicios jurídicos; servicios de seguridad personal' },
 ];
 
-window.MarkipCalc = { PACKAGES, calcFees, calcMarcaFees, autoSplitClasses, formatCLP, UTM_CLP, DIARIO_OFICIAL_CLP, TRADEMARK_CLASSES };
+window.MarkipCalc = { PACKAGES, calcFees, calcMarcaFees, autoSplitClasses, splitIntoPresentations, buildMultiMarcaGroups, formatCLP, UTM_CLP, DIARIO_OFICIAL_CLP, TRADEMARK_CLASSES };
