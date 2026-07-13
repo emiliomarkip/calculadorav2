@@ -435,7 +435,16 @@ function BrandsEditor({ brands, setBrands, maxPerMarca }) {
   );
 }
 
-function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca, multimarca, brands, setBrands }) {
+function QuoteModePicker({ multimarca, setMultimarca }) {
+  return (
+    <div className="pkg-toggle">
+      <button type="button" className={!multimarca ? 'active' : ''} onClick={() => setMultimarca(false)}>Normal</button>
+      <button type="button" className={multimarca ? 'active' : ''} onClick={() => setMultimarca(true)}>Multimarca</button>
+    </div>
+  );
+}
+
+function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMode, setDisplayMode, brand, setBrand, clientName, setClientName, description, setDescription, discount, setDiscount, groups, setGroups, maxPerMarca, multimarca, setMultimarca, brands, setBrands }) {
   const onDiscountChange = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, '');
     let n = raw === '' ? 0 : parseInt(raw, 10);
@@ -453,6 +462,10 @@ function Controls({ selectedClasses, setSelectedClasses, pkg, setPkg, displayMod
       <div className="control">
         <label className="control-label">Estilo</label>
         <DisplayModePicker mode={displayMode} setMode={setDisplayMode} />
+      </div>
+      <div className="control">
+        <label className="control-label">Cotización</label>
+        <QuoteModePicker multimarca={multimarca} setMultimarca={setMultimarca} />
       </div>
       <div className="control">
         <label className="control-label">Cliente</label>
@@ -548,24 +561,6 @@ function Tweaks({ tweaks, setTweak }) {
           onClick={() => setTweak('showChart', !tweaks.showChart)}
           aria-label="Mostrar gráfico"
         />
-      </div>
-      <div className="tweaks-row tweaks-row-stacked">
-        <div className="tweaks-label">
-          <span>Tipo de cotización</span>
-          <span className="tweaks-hint">Multimarca: cotiza varias marcas independientes (Pepsi, Coca-Cola, …) en una sola cotización. Cada marca se divide sola en presentaciones.</span>
-        </div>
-        <div className="tweaks-seg">
-          <button
-            type="button"
-            className={!tweaks.multimarca ? 'active' : ''}
-            onClick={() => setTweak('multimarca', false)}
-          >Normal</button>
-          <button
-            type="button"
-            className={tweaks.multimarca ? 'active' : ''}
-            onClick={() => setTweak('multimarca', true)}
-          >Multimarca</button>
-        </div>
       </div>
     </>
   );
@@ -856,7 +851,7 @@ function App() {
           discount={discount} setDiscount={setDiscount}
           groups={marcaGroups} setGroups={setMarcaGroups}
           maxPerMarca={maxPerMarca}
-          multimarca={multimarca}
+          multimarca={multimarca} setMultimarca={(v) => setTweak('multimarca', v)}
           brands={brands} setBrands={setBrands}
         />,
         controlsEl
