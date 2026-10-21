@@ -39,5 +39,22 @@
   <script src="calc.js"></script>
   <script type="text/babel" data-presets="react" src="v1.jsx"></script>
   <script type="text/babel" data-presets="react" src="app.jsx"></script>
+  <script>
+  // Impresión desde el Contador de plazos (solo cuando el Cotizador está incrustado en un iframe)
+  (function(){
+    if (window.top === window) return; // solo cuando está incrustado
+    var CONTADOR = "https://contador-plazos-markip.vercel.app";
+    // Ctrl + P dentro del Cotizador: imprime solo el Cotizador
+    document.addEventListener("keydown", function(e){
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p"){ e.preventDefault(); window.print(); }
+    });
+    // El contador le pide imprimir (cuando el foco está en su barra superior)
+    window.addEventListener("message", function(e){
+      if (e.origin === CONTADOR && e.data && e.data.type === "markip-print") window.print();
+    });
+    // Avisa al contador que el Cotizador admite esta impresión
+    try { window.parent.postMessage({ type: "markip-print-ready" }, CONTADOR); } catch (err) {}
+  })();
+  </script>
 </body>
 </html>
